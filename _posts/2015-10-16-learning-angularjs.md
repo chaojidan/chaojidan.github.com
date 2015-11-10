@@ -52,7 +52,7 @@ var serialize = function(obj, prefix) {
 {% endhighlight %}
 ### (2). 从后端解决（我比较喜欢第二种方法，因为json格式的数据对前端来说很方便）
 需要在PHP代码开头加入下面代码：
-{% endhighlight %}php
+{% highlight PHP %}
 $content_type_args = explode(';', $_SERVER['CONTENT_TYPE']);
 if ($content_type_args[0] == 'application/json') {
     $_POST = json_decode(file_get_contents('php://input'), true);
@@ -76,7 +76,7 @@ angular.module('myApp.filters', [])
 {% endhighlight %}
 
 用的时候只需这样：
-{% highlight javascript %}
+{% highlight html %}
       <select ng-options="i as i for i in []|range : 0 : 17"></select>
 {% endhighlight %}
 ## 3. 模板中数据绑定输出HTML代码
@@ -116,7 +116,7 @@ angular.module('myApp')
         }]);
 {% endhighlight %}
 同时需要服务器配合，PHP中加入：
-{% endhighlight %}PHP
+{% highlight PHP %}
 //允许所有域名都请求
 header("Access-Control-Allow-Origin:*");
 //上线后为了安全起见应指定域名
@@ -187,7 +187,7 @@ angular.module('myApp.controllers')
 }]);
 {% endhighlight %}
 模板代码：
-{% endhighlight %}html
+{% highlight html %}
 <a ng-click="reduceRoom()"></a>
 <strong>{{roomInfos.length}}</strong>
 <a ng-click="addRoom()"></a>
