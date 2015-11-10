@@ -7,8 +7,6 @@ tags : [javascript, AngularJs]
 {% include JB/setup %}
 
 ### 用AngularJS开发过程中遇到了无数的坑，一路磕磕绊绊走来，满满都是泪...
-![said-more-than-tears](https://cloud.githubusercontent.com/assets/3291617/10533255/51bbc77c-73f9-11e5-9e04-c7b022dbf33e.jpg)
-
 # 当然，也乐在其中~
 ![manong](https://cloud.githubusercontent.com/assets/3291617/10533537/3a1228a6-73fd-11e5-9f7e-48965d995da0.gif)
 
