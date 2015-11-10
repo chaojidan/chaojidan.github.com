@@ -1,13 +1,11 @@
 ---
 layout: page
-title: 炒鸡蛋的技术博客
-tagline: Supporting tagline
+title: 欢迎光临
+tagline: 博客装修中...
 ---
 {% include JB/setup %}
-
  
 ## 我的文章
-
 
 <ul class="posts">
   {% for post in site.posts %}

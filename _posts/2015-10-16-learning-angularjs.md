@@ -1,5 +1,6 @@
 ---
 layout: post
+title: AngularJs的那些坑
 category : js
 tagline: "learning angularjs"
 tags : [javascript, AngularJs]
