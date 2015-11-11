@@ -9,13 +9,11 @@ highlighter: pygments
 # so be sure to set them if your theme uses them.
 #
 title : 炒鸡蛋的技术博客
-tagline: Site Tagline
+tagline: 学习探讨web前端技术
 author :
-  name : Name Lastname
+  name : hui wang
   email : philosopher.wh@gmail.com
   github : chaojidan
-  twitter : chaojidan
-  feedburner : none
 
 # The production_url is only used when full-domain names are needed
 # such as sitemap.txt 
