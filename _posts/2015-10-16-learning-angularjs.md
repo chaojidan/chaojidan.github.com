@@ -2,7 +2,7 @@
 layout: post
 title: AngularJs的那些坑1
 category : javascript
-tagline: "learning angularjs"
+tagline: "AngularJs 经验总结"
 tags : [javascript, AngularJs]
 ---
 {% include JB/setup %}
