@@ -18,29 +18,28 @@ tags : [javascript, AngularJs]
         </p>
 
         <pre>
-                    {% highlight html %}
-            <div ng-repeat="guest in guests track by $index">
-                <div class="item-hd">
-                    <p>客房{{$index+1}}</p>
-                </div>
+        </pre>
+        {% highlight html %}
+        <div ng-repeat="guest in guests track by $index">
+            <div class="item-hd">
+                <p>客房{{$index+1}}</p>
+            </div>
 
-                <input type="text" name="first_name" ng-model="guest.firstName" required>
-                <div ng-messages="first_name.$error" ng-show="first_name.$touched || create_order_form.submitted">
-                    <div class="tips" ng-message="required">
-                        <strong>firstname不能为空！</strong>
-                    </div>
-                </div>
-
-                <input type="text" name="last_name" ng-model="guest.lastName" required>
-                <div ng-messages="last_name.$error" ng-show="last_name.$touched || create_order_form.submitted">
-                    <div class="tips tips3"  ng-message="required">
-                        <strong>lastname不能为空！</strong>
-                    </div>
+            <input type="text" name="first_name" ng-model="guest.firstName" required>
+            <div ng-messages="first_name.$error" ng-show="first_name.$touched || create_order_form.submitted">
+                <div class="tips" ng-message="required">
+                    <strong>firstname不能为空！</strong>
                 </div>
             </div>
-                    {% endhighlight %}
-        </pre>
 
+            <input type="text" name="last_name" ng-model="guest.lastName" required>
+            <div ng-messages="last_name.$error" ng-show="last_name.$touched || create_order_form.submitted">
+                <div class="tips tips3"  ng-message="required">
+                    <strong>lastname不能为空！</strong>
+                </div>
+            </div>
+        </div>
+        {% endhighlight %}
 
 
 
