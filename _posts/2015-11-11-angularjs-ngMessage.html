@@ -1,0 +1,53 @@
+---
+layout: post
+title: AngularJs的那些坑2 - 表单验证
+category : javascript
+tagline: "learning angularjs"
+tags : [javascript, AngularJs]
+---
+<p>
+    表单验证是web开发当中比较常用的一块，同时也是比较复杂的一块，使用angularJS的ngMessage模块可以很容易的实现灵活的表单验证功能。
+    ngMessage的基本用法就不说了，可自行参考文档，这里说几个文档里面没有的又经常会遇到的问题的解决办法。
+</p>
+<section>
+    <h3>1.对于ngRepeat循环出来的表单元素如何应用表单验证？</h3>
+    <div>
+        <p>
+        有时表单元素不是静态的，而是通过一个scope中的数组循环出来的，比如填写房间入住人信息，可能会有多个房间，所以要填写多个入住人信息，
+        通常会用一个数组来存储每个房间的入住人信息，这就需要用一个ngRepeat循环来显示表单：
+        </p>
+
+        <pre>
+                    {% highlight html %}
+            <div ng-repeat="guest in guests track by $index">
+                <div class="item-hd">
+                    <p>客房{{$index+1}}</p>
+                </div>
+
+                <input type="text" name="first_name" ng-model="guest.firstName" required>
+                <div ng-messages="first_name.$error" ng-show="first_name.$touched || create_order_form.submitted">
+                    <div class="tips" ng-message="required">
+                        <strong>firstname不能为空！</strong>
+                    </div>
+                </div>
+
+                <input type="text" name="last_name" ng-model="guest.lastName" required>
+                <div ng-messages="last_name.$error" ng-show="last_name.$touched || create_order_form.submitted">
+                    <div class="tips tips3"  ng-message="required">
+                        <strong>lastname不能为空！</strong>
+                    </div>
+                </div>
+            </div>
+                    {% endhighlight %}
+        </pre>
+
+
+
+
+        执行以上代码，会发现程序不能正确执行。因为ngMessage需要表单元素有一个name属性，但是ngRepeat
+        {% highlight javascript %}
+
+        {% endhighlight %}
+    </div>
+</section>
+
