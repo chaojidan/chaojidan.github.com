@@ -77,3 +77,49 @@ h1, h2, h3, h4 {
   background: #57A957;
   border: 1px solid #4c964d;
   color: #FFF; }
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 10px 0;
+    font-weight: bold;
+    line-height: 20px;
+    color: inherit;
+    text-rendering: optimizelegibility;
+    font-family:  ff-tisa-web-pro-1, ff-tisa-web-pro-2, 'Lucida Grande', 'Helvetica Neue',
+    Helvetica, Arial, 'Hiragino Sans GB', 'Hiragino Sans GB W3', 'Microsoft YaHei UI', 'Microsoft YaHei',
+    'WenQuanYi Micro Hei', sans-serif;
+}
+
+p {
+    margin: 0 0 10px;
+    display: block;
+    -webkit-margin-before: 1em;
+    -webkit-margin-after: 1em;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+}
+
+section > .page-header, section > .lead {
+    color: #5a5a5a;
+}
+.page-header {
+    padding-bottom: 9px;
+    margin: 20px 0 30px;
+    border-bottom: 1px solid #eee;
+}
+
+section {
+    padding-top: 30px;
+}
+
+.img-border {
+    border: 1px solid #666;
+    margin:10px;
+}
+
+.navbar-brand {
+    font-size : 20px;
+    text-rendering: optimizelegibility;
+    font-family:  ff-tisa-web-pro-1, ff-tisa-web-pro-2, 'Lucida Grande', 'Helvetica Neue',
+    Helvetica, Arial, 'Hiragino Sans GB', 'Hiragino Sans GB W3', 'Microsoft YaHei UI', 'Microsoft YaHei',
+    'WenQuanYi Micro Hei', sans-serif;
+}

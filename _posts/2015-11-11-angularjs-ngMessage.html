@@ -13,8 +13,8 @@ tags : [javascript, AngularJs]
     <h3>1.对于ngRepeat循环出来的表单元素如何应用表单验证？</h3>
     <div>
         <p>
-        有时表单元素不是静态的，而是通过一个scope中的数组循环出来的，比如填写房间入住人信息，可能会有多个房间，所以要填写多个入住人信息，
-        通常会用一个数组来存储每个房间的入住人信息，这就需要用一个ngRepeat循环来显示表单：
+            有时表单元素不是静态的，而是通过一个scope中的数组循环出来的，比如填写房间入住人信息，可能会有多个房间，所以要填写多个入住人信息，
+            通常会用一个数组来存储每个房间的入住人信息，这就需要用一个ngRepeat循环来显示表单：
         </p>
 
         {% highlight html %}
@@ -41,7 +41,7 @@ tags : [javascript, AngularJs]
 
 
 
-        执行以上代码，会发现程序不能正确执行。因为ngMessage需要表单元素有一个name属性，但是ngRepeat
+        执行以上代码，会发现程序不能正确执行。因为ngMessage需要表单元素有一个name属性，但是ngRepeat循环出来的name属性都一样
         {% highlight javascript %}
 
         {% endhighlight %}

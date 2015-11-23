@@ -1,0 +1,94 @@
+---
+layout: post
+title: 今天终于在本地把jekyll装上了
+category : other
+tagline: ""
+tags : [jekyll, jekyll-bootstrap]
+---
+{% include JB/setup %}
+<section>
+    <h3 class="page-header">第一步，在Github上快速搭建博客</h3>
+    <p>
+        首先在Github上建一个repository，名为 <strong><i>username</i>.github.com</strong>。
+    </p>
+    <p>
+        然后把 <a href="https://github.com/plusjade/jekyll-bootstrap" target="_blank">jekyll-bootstrap</a>
+        这个项目clone一份到本地，再同步到你的Github上<strong><i>username</i>.github.com</strong>项目中。
+    </p>
+    <p>
+        只需过一会儿，就可以通过 <strong>https://<i>username</i>.github.io</strong> 访问到你的博客了。
+    </p>
+    <p>
+        接下来可以美化你的博客了（懒的话也可以不做），美化完成后就可以写文章了，所有文章都放到<strong>/_posts</strong>目录里面，
+        支持markdown（.md）格式和html（.html）格式，你只需关注内容本身，其他（头、尾、样式、评论功能等）都不用管，文件同步到github后，
+        github会自动使用jekyll（一个静态网站生成器）解析你的代码，生成一个静态页面。
+        另外，jeklly 的模板页使用的是 Liquid 语言（一种开源的基于Ruby的模板语言）。
+    </p>
+</section>
+<section>
+    <h3 class="page-header">第二步，在本地安装jeklly</h3>
+    <p>
+        然后你会发现每次都要把内容提交到github上才能看到效果很不方便，所以需要在本地也搭建一个jekyll环境，方便在本地显示无误再同步。
+        在wndows上搭建jekyll环境请看这里：<a href="http://jekyll-windows.juthilo.com">http://jekyll-windows.juthilo.com</a>
+    </p>
+    <p>你主要需要安装以下软件(括号中是我安装的版本)</p>
+    <ul>
+        <li>Ruby （2.2.3）</li>
+        <li>Jekyll （3.0.0）</li>
+        <li>pygments.rb (0.6.3)</li>
+        <li>Python (2.7.10)</li>
+        <li>Pygments (2.0.2)</li>
+    </ul>
+    <p>其中Pygments是实现代码高亮用的，注意pygments.rb和Pygments是两个东西，Pygments是python写的，pygments.rb是ruby写的，
+        pygments.rb相当于一个wrapper，可以让Jekyll调用Pygments.
+    </p>
+    <p>有时为了安装某一个程序，你还不得不去装一些依赖程序，这种事情经常发生在Linux系统上。</p>
+
+    <p>都安装好以后，编辑一下 _config.yml 文件，加入下面这行，启用代码高亮：</p>
+
+    {% highlight bash %}
+    highlighter: pygments
+    {% endhighlight %}
+
+    <p>PS：pygments的配置文件使用<strong>YAML</strong>语言，规则还是很简单的，可以自行了解一下。</p>
+
+    <p>最后，在windows控制台或linux bash环境下启动服务：</p>
+
+    {% highlight bash %}
+    C:\Users\鸡蛋\Documents\GitHub\chaojidan.github.io>jekyll serve
+    Configuration file: C:/Users/鸡蛋/Documents/GitHub/chaojidan.github.io/_config.yml
+    Source: C:/Users/鸡蛋/Documents/GitHub/chaojidan.github.io
+    Destination: C:/Users/鸡蛋/Documents/GitHub/chaojidan.github.io/_site
+    Incremental build: disabled. Enable with --incremental
+    Generating...
+    done in 3.028 seconds.
+    Please add the following to your Gemfile to avoid polling for changes:
+    gem 'wdm', '>= 0.1.0' if Gem.win_platform?
+    Auto-regeneration: enabled for 'C:/Users/鸡蛋/Documents/GitHub/chaojidan.github.io'
+    Configuration file: C:/Users/鸡蛋/Documents/GitHub/chaojidan.github.io/_config.yml
+    Server address: http://127.0.0.1:4000/
+    Server running... press ctrl-c to stop.
+    {% endhighlight %}
+
+    <p>在浏览器上访问 http://localhost:4000/ 就能看到效果了</p>
+</section>
+<section>
+    <h3 class="page-header">遇到的问题</h3>
+
+    <p>遇到的问题：</p>
+    <p>测试发现首页（default.html）访问一切正常，但进到 page.html页 或post.html时CSS页样式都没有了，看生成的HTML源码
+        发现CSS路径不对：</p>
+
+    {% highlight html %}
+    <link href="/assets/themes//bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    {% endhighlight %}
+
+    <p>看到中间两个斜杠了吗？正确的地址应该是：</p>
+    {% highlight html %}
+    <link href="/assets/themes/bootstrap-3/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    {% endhighlight %}
+
+    <p>少了bootstrap-3，追踪发现是 /_includes/JB/setup 文件的问题，里面有一句：</p>
+    {% capture ASSET_PATH %}{{ BASE_PATH }}/assets/themes/{{ page.theme.name }}{% endcapture %}
+    但是在page.html页和post.html里面，page.theme.name 的值为空。但是我看 page.html页和post.html最上面都定义了
+</section>
