@@ -81,7 +81,7 @@ h1, h2, h3, h4 {
 h1, h2, h3, h4, h5, h6 {
     margin: 10px 0;
     font-weight: bold;
-    line-height: 20px;
+    line-height: 1.2em;
     color: inherit;
     text-rendering: optimizelegibility;
     font-family:  ff-tisa-web-pro-1, ff-tisa-web-pro-2, 'Lucida Grande', 'Helvetica Neue',
