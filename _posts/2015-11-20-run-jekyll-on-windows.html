@@ -9,20 +9,20 @@ tags : [jekyll, jekyll-bootstrap]
 <section>
     <h3 class="page-header">第一步，在Github上快速搭建博客</h3>
     <p>
-        首先在Github上建一个repository，名为 <strong><i>username</i>.github.com</strong>。
+        首先在Github上建一个repository，名为 <strong><i>username</i>.github.com</strong>（注意是.com 不是.io）。
     </p>
     <p>
-        然后把 <a href="https://github.com/plusjade/jekyll-bootstrap" target="_blank">jekyll-bootstrap</a>
-        这个项目clone一份到本地，再同步到你的Github上<strong><i>username</i>.github.com</strong>项目中。
+        然后在Github上找一个现成的博客模板，clone到本地，再同步到你的Github上<strong><i>username</i>.github.com</strong>项目中。
+        比如我找的是 <a href="https://github.com/plusjade/jekyll-bootstrap" target="_blank">jekyll-bootstrap</a>
     </p>
     <p>
         只需过一会儿，就可以通过 <strong>https://<i>username</i>.github.io</strong> 访问到你的博客了。
     </p>
     <p>
-        接下来可以美化你的博客了（懒的话也可以不做），美化完成后就可以写文章了，所有文章都放到<strong>/_posts</strong>目录里面，
+        接下来可以定制美化你的博客了（懒的话也可以不做），美化完成后就可以写文章了，所有文章都放到<strong>/_posts</strong>目录里面，
         支持markdown（.md）格式和html（.html）格式，你只需关注内容本身，其他（头、尾、样式、评论功能等）都不用管，文件同步到github后，
         github会自动使用jekyll（一个静态网站生成器）解析你的代码，生成一个静态页面。
-        另外，jeklly 的模板页使用的是 Liquid 语言（一种开源的基于Ruby的模板语言）。
+        另外，jeklly 的模板页使用的是 Liquid 语言（一种开源的基于Ruby的模板语言）,你可能需要熟悉一下它的语法（不是很难）。
     </p>
 </section>
 <section>
@@ -72,7 +72,7 @@ tags : [jekyll, jekyll-bootstrap]
 
     <p>在浏览器上访问 http://localhost:4000/ 就能看到效果了</p>
 </section>
-<section>
+<!--<section>
     <h3 class="page-header">遇到的问题</h3>
 
     <p>遇到的问题：</p>
@@ -91,4 +91,4 @@ tags : [jekyll, jekyll-bootstrap]
     <p>少了bootstrap-3，追踪发现是 /_includes/JB/setup 文件的问题，里面有一句：</p>
     {% capture ASSET_PATH %}{{ BASE_PATH }}/assets/themes/{{ page.theme.name }}{% endcapture %}
     但是在page.html页和post.html里面，page.theme.name 的值为空。但是我看 page.html页和post.html最上面都定义了
-</section>
+</section>-->

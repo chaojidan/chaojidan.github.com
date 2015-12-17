@@ -8,8 +8,8 @@ highlighter: pygments
 # Themes are encouraged to use these universal variables 
 # so be sure to set them if your theme uses them.
 #
-title : 炒鸡蛋的技术博客
-tagline: 学习探讨web前端技术
+title : 炒鸡蛋的博客
+tagline: 主要学习探讨web前端技术
 author :
   name : wanghui
   email : philosopher.wh@gmail.com
