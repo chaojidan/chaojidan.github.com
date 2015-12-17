@@ -6,7 +6,7 @@ tagline:  by 王小波
 {% include JB/setup %}
 
 <div>
-   <img src="/images/index/cover.jpg" class="img-responsive">
+   <img src="/images/index/cover_min.jpg" class="img-responsive">
 </div>
 
 ## 我的文章
