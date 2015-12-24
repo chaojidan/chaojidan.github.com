@@ -374,7 +374,7 @@ tags : [algorithm, genetic]
                             } else {
                                 $interval.cancel(timer);
                             }
-                        }, 90);
+                        }, 100);
                     },
                     emit : function(id, fitness) {
                         this.process_result.push({id : id, fitness: fitness});
@@ -455,7 +455,7 @@ tags : [algorithm, genetic]
                             } else {
                                 $interval.cancel(timer);
                             }
-                        }, 13000);
+                        }, 16000);
                     },
                     emit : function(children_id, children, parents_info) {
                         this.childrens.push(children);
@@ -544,7 +544,7 @@ tags : [algorithm, genetic]
                 };
 
                 $scope.logInfo = [];
-                //$(function() {
+
                 Evolution.config({
                     generation_num : 2, //繁衍多少代
                     individual_num : 200  //每一代个体数量
@@ -558,7 +558,7 @@ tags : [algorithm, genetic]
                             //$('#generation_box').append('<li>第' + gid + '代繁衍开始</li>');
                         },
                         function(gid, robey_id, robey, parents_info) {
-                            $scope.logInfo.push('第' + gid + '代诞生新个体(ID' + robey_id + '), 适应度：父 '
+                            $scope.logInfo.push('第' + gid + '代诞生新个体(ID：' + robey_id + '), 适应度：父 '
                                     + parents_info.father.fitness + '，母 ' + parents_info.mother.fitness);
                             //$('#generation_box').append('<li>第' + gid + '代诞生新个体(ID' + robey_id + ')</li>');
                         },
@@ -573,10 +573,6 @@ tags : [algorithm, genetic]
                             //        + parents_info.father.fitness + '，母亲适应度：' + parents_info.mother.fitness + '</li>');
                             console.log('进化完成', robey);
                         });
-
-
-                //});
-
 
             });
 
