@@ -1,0 +1,530 @@
+---
+layout: post
+title: 遗传算法
+category : programming
+tagline: "优胜劣汰 适者生存"
+tags : [algorithm, genetic]
+---
+{% include JB/setup %}
+<script language="JavaScript" type="application/javascript" src="http://cdn.bootcss.com/angular.js/1.4.8/angular.js"></script>
+<div ng-app="evolutionApp" ng-controller="evolutionController">
+    <div class="row">
+        <div class="col-md-4">
+            <ul>
+                <li ng-repeat="log in logInfo track by $index">
+                    <span ng-bind="log"></span>
+                </li>
+            </ul>
+            <div>
+                最终罗比的基因：
+                <p style="word-break: break-all; word-wrap: break-word;"></p>
+            </div>
+        </div>
+        <div class="col-md-8">
+
+        </div>
+    </div>
+</div>
+
+<script type="application/javascript">
+    'use strict';
+    angular.module('evolutionApp', [])
+            .controller('evolutionController', function($scope) {
+                var randomInt = function(min, max) {
+                    return Math.floor(Math.random() * (max - min + 1)) + min;
+                };
+
+                //情形列表243种
+                var Situation = {
+                    situationMap : {},
+                    status : ['empty', 'wall', 'jar'],
+                    make : function() {
+                        var num = 0;
+                        for (var i = 0; i < this.status.length; i++) {
+                            for (var j = 0; j < this.status.length; j++) {
+                                for (var k = 0; k < this.status.length; k++) {
+                                    for (var m = 0; m < this.status.length; m++) {
+                                        for (var n = 0; n < this.status.length; n++) {
+                                            var s = [this.status[i], this.status[j], this.status[k], this.status[m], this.status[n]].join(',');
+                                            this.situationMap[s] = num;
+                                            num++;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        return this.situationMap;
+                    }
+                };
+
+                //单个机器人罗比
+                var Robey = function (gene) {
+                    this.gene = []; //罗比的基因
+                    this.init(gene);
+                };
+                Robey.prototype = {
+                    init : function(gene) {
+                        if (!gene) {
+                            for (var i = 0; i < 243; i++) {
+                                this.gene.push(randomInt(0, 6));
+                            }
+                        } else {
+                            this.gene = gene;
+                        }
+                        return this.gene;
+                    },
+                    getGene : function() {
+                        return this.gene;
+                    },
+                    getAction : function(gene_id) {
+                        return this.gene[gene_id];
+                    }
+                };
+
+                //罗比所在的二维世界
+                var World = function() {
+                    this.height = 10;
+                    this.width = 10;
+                    this.fields = [];
+                };
+                World.prototype= {
+                    init : function() {
+                        for (var x = 0; x < this.width; x++) {
+                            this.fields[x] = [];
+                            for (var y = 0; y < this.height; y++) {
+                                this.fields[x][y] = randomInt(0, 1);
+                            }
+                        }
+                        return this.fields;
+                    },
+                    getField : function(x, y) {
+                        return this.fields[x][y];
+                    },
+                    setField : function(x, y, value) {
+                        this.fields[x][y] = value;
+                    },
+                    getHeight : function() {
+                        return this.height;
+                    },
+                    getWidth : function() {
+                        return this.width;
+                    }
+                };
+
+                //单个个体的单次进化过程，得到单次适应度
+                var SingleProcess = function(robey, world) {
+                    this.step_num = 100;
+                    this.position = {
+                        x : 0,
+                        y : 0
+                    };
+                    this.robey = robey;
+                    this.world = world;
+                    this.fitness = 0;
+                    this.world.init();
+                };
+                SingleProcess.prototype = {
+                    getCurrentSituation : function() {
+                        var situation = [];
+                        //北
+                        if (this.position.y == 0) {
+                            situation.push('wall');
+                        } else {
+                            if (this.world.getField(this.position.x, this.position.y - 1) === 1) {
+                                situation.push('jar');
+                            } else {
+                                situation.push('empty');
+                            }
+                        }
+                        //南
+                        if (this.position.y == this.world.getHeight() - 1) {
+                            situation.push('wall');
+                        } else {
+                            if (this.world.getField(this.position.x, this.position.y + 1) === 1) {
+                                situation.push('jar');
+                            } else {
+                                situation.push('empty');
+                            }
+                        }
+                        //东
+                        if (this.position.x == this.world.getWidth() - 1) {
+                            situation.push('wall');
+                        } else {
+                            if (this.world.getField(this.position.x + 1, this.position.y) === 1) {
+                                situation.push('jar');
+                            } else {
+                                situation.push('empty');
+                            }
+                        }
+                        //西
+                        if (this.position.x == 0) {
+                            situation.push('wall');
+                        } else {
+                            if (this.world.getField(this.position.x - 1, this.position.y) === 1) {
+                                situation.push('jar');
+                            } else {
+                                situation.push('empty');
+                            }
+                        }
+                        //中
+                        if (this.world.getField(this.position.x, this.position.y) === 1) {
+                            situation.push('jar');
+                        } else {
+                            situation.push('empty');
+                        }
+                        return situation.join(',');
+                    },
+                    start : function(situationMap) {
+                        var self = this;
+                        for (var i = 0; i < this.step_num; i++) {
+                            self.next(situationMap);
+                        }
+                        return this.getFitness();
+                    },
+                    next : function(situationMap) {
+                        var situation = this.getCurrentSituation();
+                        var gene_id;
+                        if (gene_id = situationMap[situation]) {
+                            //console.log('基因id：' + gene_id);
+                            var action_id = this.robey.getAction(gene_id);
+                            //console.log('action_id:', action_id);
+                            switch (action_id) {
+                                case 0:
+                                    //console.log('向北');
+                                    this.moveNorthward(); //向北
+                                    break;
+                                case 1:
+                                    //console.log('向南');
+                                    this.moveSouthward(); //向南
+                                    break;
+                                case 2:
+                                    //console.log('向东');
+                                    this.moveEastward(); //向东
+                                    break;
+                                case 3:
+                                    //console.log('向西');
+                                    this.moveWestward(); //向西
+                                    break;
+                                case 4:
+                                    //console.log('不动');
+                                    this.rest(); //不动
+                                    break;
+                                case 5:
+                                    //console.log('捡拾罐子');
+                                    this.pickUpJar(); //捡拾罐子
+                                    break;
+                                case 6:
+                                    //console.log('随机移动');
+                                    this.moveRandom(); //随机移动
+                                    break;
+                            }
+                        }
+                        return this.getFitness();
+                    },
+                    moveNorthward : function() {
+                        if (this.position.y > 0) {
+                            this.position.y -= 1;
+                        } else {
+                            this.reduceFitness(5); //撞墙
+                        }
+                    },
+                    moveSouthward : function() {
+                        if (this.position.y < this.world.getHeight() - 1) {
+                            this.position.y += 1;
+                        } else {
+                            this.reduceFitness(5);
+                        }
+                    },
+                    moveEastward : function() {
+                        if (this.position.x < this.world.getWidth() - 1) {
+                            this.position.x += 1;
+                        } else {
+                            this.reduceFitness(5);
+                        }
+                    },
+                    moveWestward : function() {
+                        if (this.position.x > 0) {
+                            this.position.x -= 1;
+                        } else {
+                            this.reduceFitness(5);
+                        }
+                    },
+                    rest : function() {
+                        //do nothing
+                    },
+                    pickUpJar : function() {
+                        if (this.world.getField(this.position.x, this.position.y) === 1) {
+                            this.addFitness(10);
+                            this.world.setField(this.position.x, this.position.y, 0);
+                        } else {
+                            this.reduceFitness(1);
+                        }
+                    },
+                    moveRandom : function() {
+                        var methods = ['moveNorthward', 'moveSouthward', 'moveEastward', 'moveWestward'];
+                        var rand = randomInt(0, 3);
+                        //console.log(methods[rand]);
+                        this[methods[rand]]();
+                    },
+                    addFitness : function(value) {
+                        this.fitness += value;
+                    },
+                    reduceFitness : function(value) {
+                        this.fitness -= value;
+                    },
+                    getFitness : function() {
+                        return this.fitness;
+                    }
+                };
+
+                //单个个体在n个世界中的进化过程，得到平均适应度
+                var Process = function(id, robey, parent_gid, population_id) {
+                    this.parent_generation_id = parent_gid ? parent_gid : 0; //父代
+                    this.population_id = population_id ? population_id : 0;
+                    this.id = id;
+                    this.robey = robey;
+                    this.world_num = 10;
+                    this.curr_world_num = 0;
+                    this.fitness_sum = 0;
+                    this.fitness_avg = 0;
+                    this.event = {
+                        finish : null
+                    };
+                };
+                Process.prototype = {
+                    start : function(situationMap, onFinish) {
+                        var self = this;
+                        self.event.finish = onFinish;
+                        var timer = window.setInterval(function() {
+                            if (self.curr_world_num < self.world_num) {
+                                var singleProcess = new SingleProcess(self.robey, new World());
+                                self.fitness_sum += singleProcess.start(situationMap);
+                                //console.log('父代',self.parent_generation_id, '种群', self.population_id, '个体', self.id, 'world:', self.curr_world_num, fitness, self.fitness_sum);
+                                self.curr_world_num++;
+                            } else {
+                                window.clearInterval(timer);
+                                self.fitness_avg = Math.round(self.fitness_sum / self.world_num);
+                                if (self.event.finish) {
+                                    self.event.finish(self.id, self.fitness_avg);
+                                }
+                            }
+                        }, 0);
+                    }
+                };
+
+                //一代种群的进化，选出最优的一对作为父母，基因遗传到下一代，并且加入一定基因变异
+                var RobeyChildren = function(parent_gid, population_id) {
+                    this.parent_generation_id = parent_gid ? parent_gid : 0; //父代id
+                    this.population_id = population_id ? population_id : 0; //种群id
+                    this.collection = [];
+                    this.situationMap = Situation.make();
+                    this.finish_num = 0;
+                    this.process_result = [];
+                    this.curr_individual_num = 0;
+                    this.event = {
+                        finish : null
+                    }
+                };
+                RobeyChildren.prototype = {
+                    multiply : function(collection, onFinish) {
+                        var self = this;
+                        self.collection = collection;
+                        self.event.finish = onFinish;
+                        //得出每个个体的平均适应度
+                        var timer = window.setInterval(function() {
+                            if (self.curr_individual_num < self.collection.length) {
+                                console.log('父代',self.parent_generation_id, '种群', self.population_id, '当前个体：' , self.curr_individual_num );
+                                var process = new Process(self.curr_individual_num, self.collection[self.curr_individual_num],
+                                        self.parent_generation_id, self.population_id);
+                                process.start(self.situationMap, function(id, fitness) {
+                                    console.log('父代',self.parent_generation_id, '种群',
+                                            self.population_id, '当前个体：' , id, 'fitness_avg', fitness);
+                                    self.emit(id, fitness);
+                                });
+                                self.curr_individual_num++;
+                            } else {
+                                window.clearInterval(timer);
+                            }
+                        }, 0);
+                    },
+                    emit : function(id, fitness) {
+                        this.process_result.push({id : id, fitness: fitness});
+                        this.finish_num++;
+                        if (this.finish_num == this.collection.length) {
+                            var parents = this.choiceParents();
+                            this.inherit(parents);
+                        }
+                    },
+                    choiceParents : function() {
+                        var descSort = function(a, b) {
+                            return a.fitness < b.fitness;
+                        };
+                        this.process_result.sort(descSort);
+                        return this.process_result.slice(0, 2);
+                    },
+                    inherit : function(parents) {
+                        var father = this.collection[parents[0].id],
+                                mother = this.collection[parents[1].id];
+                        //console.log('遗传', father, parents[0].fitness, mother, parents[1].fitness);
+                        var n = randomInt(0, 243);
+                        //繁衍后代
+                        var newGene = father.getGene().slice(0, n).concat(mother.getGene().slice(n, 243));
+                        //console.log(newGene);
+                        //基因变异
+                        var variation = randomInt(0, 243);
+                        //console.log(variation, newGene[variation]);
+                        newGene[variation] = randomInt(0, 6);
+                        //console.log('curr:' + newGene[variation]);
+                        if (this.event.finish) {
+                            this.event.finish(this.population_id, new Robey(newGene), {
+                                father : { fitness : parents[0].fitness },
+                                mother : { fitness : parents[1].fitness }
+                            });
+                        }
+                    }
+                };
+
+                //生成新一代种群
+                var YoungerGeneration = function(parent_gid) {
+                    this.parent_generation_id = parent_gid; //父代
+                    this.population_num = 10; //最少2个,种群数，也是新一代个体数
+                    this.parent_fitness_sum = 0;
+                    this.parent_fitness_avg = 0;
+                    this.childrens = [];
+                    this.curr_population_num = 0;
+                    this.event = {
+                        newBabyBirth : null,
+                        finish : null
+                    }
+                };
+                YoungerGeneration.prototype = {
+                    makeInitPopulation : function() {
+                        var population = [];
+                        for (var i = 0; i < this.population_num; i++) {
+                            population.push(new Robey());
+                        }
+                        return population;
+                    },
+                    start : function(population, onNewBabyBirth, onFinish) {
+                        var self = this;
+                        self.event.finish = onFinish;
+                        self.event.newBabyBirth = onNewBabyBirth;
+                        if (!population || population.length == 0) {
+                            //初始种群
+                            population = self.makeInitPopulation();
+                        }
+                        //同一个种群进行population_num次繁衍，每一次繁衍生成一个新后代，做为下一代种群的一员
+                        var timer = window.setInterval(function() {
+                            if (self.curr_population_num < self.population_num) {
+                                console.log('父代', self.parent_generation_id, '当前种群：', self.curr_population_num );
+                                var robeyChildren = new RobeyChildren(self.parent_generation_id, self.curr_population_num);
+                                //产生新个体
+                                robeyChildren.multiply(population, function(children_id, children, parents_info) {
+                                    self.emit(children_id, children, parents_info);
+                                });
+                                self.curr_population_num++;
+                            } else {
+                                window.clearInterval(timer);
+                            }
+                        }, 0);
+                    },
+                    emit : function(children_id, children, parents_info) {
+                        this.childrens.push(children);
+                        this.parent_fitness_sum += parents_info.father.fitness + parents_info.mother.fitness;
+                        if (this.event.newBabyBirth) {
+                            this.event.newBabyBirth(children_id, children, parents_info);
+                        }
+                        if (this.childrens.length == this.population_num) {
+                            this.parent_fitness_avg = Math.round(this.parent_fitness_sum / this.population_num / 2);
+                            if (this.event.finish) {
+                                this.event.finish(this.childrens, {
+                                    fitness : this.parent_fitness_avg
+                                });
+                            }
+                        }
+                    }
+                };
+
+                var Evolution = {
+                    final_robey : null,
+                    current_generation : 0,
+                    generation_num : 10, //繁衍多少代
+                    newBabyBirth : null,
+                    generationStart : null,
+                    generationFinish : null,
+                    finish : null,
+                    start : function(generation, onGenerationStart, onNewBabyBirth, onGenerationFinish, onFinish) {
+                        if (this.generation_num <= 0) {
+                            return;
+                        }
+                        this.generationStart = onGenerationStart;
+                        this.generationFinish = onGenerationFinish;
+                        this.finish = onFinish;
+                        this.newBabyBirth = onNewBabyBirth;
+                        this.evolve(generation);
+                    },
+                    evolve : function(generation) {
+                        var self = this;
+                        if (self.generationStart) {
+                            self.generationStart(self.current_generation + 1);
+                        }
+                        if (self.generation_num == 1 || self.current_generation == self.generation_num - 1) {
+                            //最后一代
+                            var robeyChildren = new RobeyChildren(self.current_generation);
+                            robeyChildren.multiply(generation, function(children_id, children, parents_info) {
+                                self.final_robey = children;
+                                if (self.finish) {
+                                    self.finish(self.current_generation + 1, children_id, children, parents_info);
+                                }
+                                self.current_generation++;
+                            });
+                        } else {
+                            var yGeneration = new YoungerGeneration(self.current_generation);
+                            console.log("第" + self.current_generation + '代');
+                            yGeneration.start(generation,
+                                    function(children_id, children, parents_info) {
+                                        if (self.newBabyBirth) {
+                                            self.newBabyBirth(self.current_generation + 1, children_id, children, parents_info);
+                                        }
+                                    },
+                                    function(childrens, parents_info) {
+                                        if (self.generationFinish) {
+                                            self.generationFinish(self.current_generation + 1, childrens, parents_info);
+                                        }
+                                        self.current_generation++;
+                                        self.evolve(childrens);
+                                    });
+                        }
+                    }
+                };
+
+                $scope.logInfo = [];
+                //$(function() {
+                    Evolution.start([],
+                            function(gid) {
+                                $scope.logInfo.push('第' + gid + '代繁衍开始');
+                                //$('#generation_box').append('<li>第' + gid + '代繁衍开始</li>');
+                            },
+                            function(gid, robey_id, robey, parents_info) {
+                                $scope.logInfo.push('第' + gid + '代诞生新个体(ID' + robey_id + ')');
+                                //$('#generation_box').append('<li>第' + gid + '代诞生新个体(ID' + robey_id + ')</li>');
+                            },
+                            function(gid, childrens, parents_info) {
+                                $scope.logInfo.push('第' + gid + '代繁衍完成， 父代平均适应度：' + parents_info.fitness);
+                                //$('#generation_box').append('<li>第' + gid + '代繁衍完成， 父代平均适应度：' + parents_info.fitness + '</li>');
+                            },
+                            function(gid, robey_id, robey, parents_info) {
+                                $scope.logInfo.push('进化完成，父亲适应度：'
+                                        + parents_info.father.fitness + '，母亲适应度：' + parents_info.mother.fitness);
+                                //$('#generation_box').append('<li>进化完成，父亲适应度：'
+                                //        + parents_info.father.fitness + '，母亲适应度：' + parents_info.mother.fitness + '</li>');
+                                console.log('进化完成', robey);
+                            });
+
+
+                //});
+
+            });
+
+
+</script>
