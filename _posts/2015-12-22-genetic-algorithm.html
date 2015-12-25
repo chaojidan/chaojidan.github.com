@@ -417,7 +417,6 @@ tags : [algorithm, genetic]
                             return a.fitness < b.fitness ? 1 : -1;
                         };
                         this.process_result.sort(descSort);
-                        console.log(this.process_result);
                         return this.process_result.slice(0, 2);
                     },
                     inherit : function(parents) {
