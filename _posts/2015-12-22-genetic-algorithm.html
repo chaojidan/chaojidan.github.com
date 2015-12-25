@@ -449,6 +449,7 @@ tags : [algorithm, genetic]
                     this.childrens = [];
                     this.curr_population_num = 0;
                     this.status = 0;
+                    this.interval = this.population_num * 100;
                     this.event = {
                         newBabyBirth : null,
                         finish : null,
@@ -471,7 +472,6 @@ tags : [algorithm, genetic]
                             self.emit(children_id, children, parents_info);
                         });
                         self.curr_population_num++;
-
                         var timer = $interval(function() {
                             if (self.status !== -1 && self.curr_population_num < self.population_num) {
                                 //console.log('开启新进程');
@@ -490,7 +490,7 @@ tags : [algorithm, genetic]
                                 }
                                 $interval.cancel(timer);
                             }
-                        }, 5000);
+                        }, this.interval);
                     },
                     emit : function(children_id, children, parents_info) {
                         if (this.status === -1) {
@@ -542,14 +542,24 @@ tags : [algorithm, genetic]
                         this.onWillStop = cfg.onWillStop;
                         this.onStop = cfg.onStop;
                     },
-                    makeInitPopulation : function() {
-                        var population = [];
-                        for (var i = 0; i < this.individual_num; i++) {
-                            population.push(new Robey());
-                        }
-                        return population;
+                    makeInitPopulation : function(callback) {
+                        var population = [],
+                                self = this,
+                                curr_num = 0;
+                        //console.log('生成初始种群');
+                        var timer = $interval(function() {
+                            if (curr_num < self.individual_num) {
+                                population.push(new Robey());
+                                curr_num++;
+                            } else {
+                                $interval.cancel(timer);
+                                //console.log(population);
+                                callback(population);
+                            }
+                        }, 50);
                     },
                     start : function(population) {
+                        var self = this;
                         if (this.generation_num <= 0) {
                             return;
                         }
@@ -560,9 +570,12 @@ tags : [algorithm, genetic]
                         this.running = true;
                         if (!population || population.length == 0) {
                             //初始种群
-                            population = this.makeInitPopulation();
+                            this.makeInitPopulation(function(population) {
+                                self.evolve(population);
+                            });
+                        } else {
+                            this.evolve(population);
                         }
-                        this.evolve(population);
                     },
                     evolve : function(population) {
                         var self = this;
