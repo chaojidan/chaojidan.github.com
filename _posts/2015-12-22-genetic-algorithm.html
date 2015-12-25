@@ -413,14 +413,17 @@ tags : [algorithm, genetic]
                     },
                     choiceParents : function() {
                         var descSort = function(a, b) {
-                            return a.fitness < b.fitness;
+                            //console.log(a.fitness, b.fitness);
+                            return a.fitness < b.fitness ? 1 : -1;
                         };
                         this.process_result.sort(descSort);
+                        console.log(this.process_result);
                         return this.process_result.slice(0, 2);
                     },
                     inherit : function(parents) {
-                        var father = this.collection[parents[0].id],
-                                mother = this.collection[parents[1].id];
+                        var r = randomInt(0, 1),
+                                father = this.collection[parents[r].id],
+                                mother = this.collection[parents[r ? 0 : 1].id];
                         //console.log('遗传', father, parents[0].fitness, mother, parents[1].fitness);
                         var n = randomInt(0, 243);
                         //繁衍后代
@@ -556,7 +559,7 @@ tags : [algorithm, genetic]
                                 //console.log(population);
                                 callback(population);
                             }
-                        }, 50);
+                        }, 10);
                     },
                     start : function(population) {
                         var self = this;
