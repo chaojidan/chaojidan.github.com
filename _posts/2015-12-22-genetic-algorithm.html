@@ -36,16 +36,24 @@ tags : [algorithm, genetic]
             </form>
         </div>
         <div class="col-md-6">
-            <h3>进度：</h3>
-            <div style="height: 500px; overflow-x: hidden; overflow-y: auto;
+            <h4>主进度：</h4>
+            <div style="height: 300px; overflow-x: hidden; overflow-y: auto;
             border: 1px solid #999; border-radius : 0.5em;">
                 <ul style="margin-top: 5px;">
-                    <li ng-repeat="log in logInfo track by $index">
+                    <li ng-repeat="log in mainLogInfo track by $index">
                         <span ng-bind="log"></span>
                     </li>
                 </ul>
             </div>
-
+            <h4>进度细节：</h4>
+            <div style="height: 500px; overflow-x: hidden; overflow-y: auto;
+            border: 1px solid #999; border-radius : 0.5em;">
+                <ul style="margin-top: 5px;">
+                    <li ng-repeat="log in detailLogInfo track by $index">
+                        <span ng-bind="log"></span>
+                    </li>
+                </ul>
+            </div>
             <div>
                 <p style="word-break: break-all; word-wrap: break-word;"></p>
             </div>
@@ -628,42 +636,43 @@ tags : [algorithm, genetic]
                     }
                 };
 
-                $scope.logInfo = [];
+                $scope.mainLogInfo = [];
+                $scope.detailLogInfo = [];
                 $scope.config = {
                     generation_num : 100, //繁衍多少代
-                    individual_num : 200,  //每一代个体数量
+                    individual_num : 100,  //每一代个体数量
                     task_num : 100,  //获取平均适应度要生存多少次
                     ipt_step_num : 100, //每一次生存要走多少步
                     onGenerationStart : function(gid) {
-                        $scope.logInfo.push('第' + gid + '代繁衍开始');
-                        console.log('第' + gid + '代繁衍开始');
+                        $scope.mainLogInfo.push('第' + gid + '代繁衍开始');
+                        //console.log('第' + gid + '代繁衍开始');
                         //$('#generation_box').append('<li>第' + gid + '代繁衍开始</li>');
                     },
                     onNewBabyBirth : function(gid, robey_id, robey, parents_info) {
-                        $scope.logInfo.push('  诞生第' + (gid + 1) + '代新个体(ID：' + robey_id + '), 适应度：父 '
-                                + parents_info.father.fitness + '，母 ' + parents_info.mother.fitness);
+                        $scope.detailLogInfo.push('  诞生第' + (gid + 1) + '代新个体(ID：' + robey_id + '), 父母适应度：'
+                                + parents_info.father.fitness + '，' + parents_info.mother.fitness);
                         //$('#generation_box').append('<li>第' + gid + '代诞生新个体(ID' + robey_id + ')</li>');
                     },
                     onGenerationFinish : function(gid, childrens, parents_info) {
-                        $scope.logInfo.push('第' + gid + '代繁衍完成， 父代平均适应度：' + parents_info.fitness);
+                        $scope.mainLogInfo.push('第' + gid + '代繁衍完成， 父代平均适应度：' + parents_info.fitness);
                         //$('#generation_box').append('<li>第' + gid + '代繁衍完成， 父代平均适应度：' + parents_info.fitness + '</li>');
                     },
                     onFinish : function(gid, robey_id, robey, parents_info) {
-                        $scope.logInfo.push('进化完成，适应度：父 '
+                        $scope.mainLogInfo.push('进化完成，适应度：父 '
                                 + parents_info.father.fitness + '，母 ' + parents_info.mother.fitness);
                         //$('#generation_box').append('<li>进化完成，父亲适应度：'
                         //        + parents_info.father.fitness + '，母亲适应度：' + parents_info.mother.fitness + '</li>');
-                        console.log('进化完成', robey);
+                        //console.log('进化完成', robey);
                     },
                     onWillStop : function() {
-                        $scope.logInfo.push('进化即将终止');
+                        $scope.mainLogInfo.push('进化即将终止');
                     },
                     onStop : function() {
-                        $scope.logInfo.push('进化被终止');
+                        $scope.mainLogInfo.push('进化被终止');
                     }
                 };
                 $scope.start = function () {
-                    $scope.logInfo.push('进化开始');
+                    $scope.mainLogInfo.push('进化开始');
                     Evolution.config($scope.config);
                     Evolution.start();
                 };
