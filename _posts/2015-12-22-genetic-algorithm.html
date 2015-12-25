@@ -7,6 +7,8 @@ tags : [algorithm, genetic]
 ---
 {% include JB/setup %}
 <script language="JavaScript" type="application/javascript" src="http://cdn.bootcss.com/angular.js/1.4.8/angular.js"></script>
+<script src="/assets/themes/bootstrap-3/bootstrap/js/ui-bootstrap-custom-tpls-0.14.3.min.js"></script>
+
 <div ng-app="evolutionApp" ng-controller="evolutionController">
     <div class="row">
         <div class="col-md-12" style="margin-bottom: 20px;">
@@ -49,6 +51,11 @@ tags : [algorithm, genetic]
         </div>
         <div class="col-md-6">
             <h4>主进度：</h4>
+
+            <uib-progressbar class="progress-striped active" value="rateOfProgress">
+                <i ng-bind="rateOfProgress"></i>%
+            </uib-progressbar>
+
             <div style="height: 300px; overflow-x: hidden; overflow-y: auto;
             border: 1px solid #999; border-radius : 0.5em;">
                 <ul style="margin-top: 5px;">
@@ -78,7 +85,7 @@ tags : [algorithm, genetic]
 
 <script type="application/javascript">
     'use strict';
-    angular.module('evolutionApp', [])
+    angular.module('evolutionApp', ['ui.bootstrap'])
             .controller('evolutionController', function($scope, $interval) {
                 var randomInt = function(min, max) {
                     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -543,26 +550,29 @@ tags : [algorithm, genetic]
                     generation_num : 100, //繁衍多少代
                     individual_num : 100, //每一代个体数量
 
+                    birth_individual_amount : 0, //当前诞生个体总数（用于计算进度）
+
                     yGeneration : null,
 
-                    onGenerationStart : null,
-                    onNewBabyBirth : null,
-                    onGenerationFinish : null,
-                    onFinish : null,
-                    onWillStop : null,
-                    onStop : null,
+                    event : {
+                        onGenerationStart : null,
+                        onNewBabyBirth : null,
+                        onGenerationFinish : null,
+                        onFinish : null,
+                        onWillStop : null,
+                        onStop : null
+                    },
 
                     running : false,
                     config : function(cfg) {
                         this.generation_num = cfg.generation_num;
                         this.individual_num = cfg.individual_num;
-                        
-                        this.onGenerationStart = cfg.onGenerationStart;
-                        this.onGenerationFinish = cfg.onGenerationFinish;
-                        this.onNewBabyBirth = cfg.onNewBabyBirth;
-                        this.onFinish = cfg.onFinish;
-                        this.onWillStop = cfg.onWillStop;
-                        this.onStop = cfg.onStop;
+                        this.event = cfg.event;
+                    },
+                    init : function() {
+                        var self = this;
+                        self.current_generation = 0;
+                        self.birth_individual_amount = 0;
                     },
                     makeInitPopulation : function(callback) {
                         var population = [],
@@ -589,6 +599,7 @@ tags : [algorithm, genetic]
                             alert('进化正在进行当中...');
                             return;
                         }
+                        this.init();
                         this.running = true;
                         if (!population || population.length == 0) {
                             //初始种群
@@ -601,16 +612,16 @@ tags : [algorithm, genetic]
                     },
                     evolve : function(population) {
                         var self = this;
-                        if (self.onGenerationStart) {
-                            self.onGenerationStart(self.current_generation + 1);
+                        if (self.event.onGenerationStart) {
+                            self.event.onGenerationStart(self.current_generation + 1);
                         }
                         if (self.generation_num == 1 || self.current_generation == self.generation_num - 1) {
                             //最后一代
                             var robeyChildren = new RobeyChildren(self.current_generation);
                             robeyChildren.multiply(population, function(children_id, children, parents_info) {
                                 self.final_robey = children;
-                                if (self.onFinish) {
-                                    self.onFinish(self.current_generation + 1, children_id, children, parents_info);
+                                if (self.event.onFinish) {
+                                    self.event.onFinish(self.current_generation + 1, children_id, children, parents_info);
                                 }
                                 self.current_generation++;
                                 self.running = false;
@@ -620,47 +631,56 @@ tags : [algorithm, genetic]
                             //console.log("第" + self.current_generation + '代');
                             self.yGeneration.start(population,
                                     function(children_id, children, parents_info) {
-                                        if (self.onNewBabyBirth) {
-                                            self.onNewBabyBirth(self.current_generation + 1, children_id, children, parents_info);
+                                        self.birth_individual_amount++;
+                                        if (self.event.onNewBabyBirth) {
+                                            self.event.onNewBabyBirth.call(self, self.current_generation + 1, children_id, children, parents_info);
+                                            //self.onNewBabyBirth(self.current_generation + 1, children_id, children, parents_info);
                                         }
                                     },
                                     function(childrens, parents_info) {
-                                        if (self.onGenerationFinish) {
-                                            self.onGenerationFinish(self.current_generation + 1, childrens, parents_info);
+                                        if (self.event.onGenerationFinish) {
+                                            self.event.onGenerationFinish(self.current_generation + 1, childrens, parents_info);
                                         }
                                         self.current_generation++;
                                         self.evolve(childrens);
                                     },
+                                    //进化被终止
                                     function() {
-                                        if (self.onStop) {
-                                            self.onStop();
+                                        if (self.event.onStop) {
+                                            self.event.onStop();
                                         }
                                         self.running = false;
                                     });
                         }
                     },
                     stop : function() {
-                        console.log('程序正在终止');
-                        if (this.onWillStop) {
-                            this.onWillStop();
+                        if (this.running === true) {
+                            if (this.event.onWillStop) {
+                                this.event.onWillStop();
+                            }
+                            console.log('程序正在终止');
+                            this.yGeneration.stop();
                         }
-                        this.yGeneration.stop();
                     }
                 };
 
-                $scope.mainLogInfo = [];
-                $scope.detailLogInfo = [];
                 $scope.config = {
                     generation_num : 100, //繁衍多少代
                     individual_num : 30,  //每一代个体数量
-                    task_num : 100,  //获取平均适应度要生存多少次
-                    ipt_step_num : 100, //每一次生存要走多少步
+                    task_num : 200,  //获取平均适应度要执行多少次任务
+                    ipt_step_num : 200 //每一次任务要走多少步
+                };
+                $scope.mainLogInfo = [];
+                $scope.rateOfProgress = 0;
+                $scope.detailLogInfo = [];
+                var eventCallback = {
                     onGenerationStart : function(gid) {
                         $scope.mainLogInfo.push('第' + gid + '代繁衍开始');
                         //console.log('第' + gid + '代繁衍开始');
                         //$('#generation_box').append('<li>第' + gid + '代繁衍开始</li>');
                     },
                     onNewBabyBirth : function(gid, robey_id, robey, parents_info) {
+                        $scope.rateOfProgress = Math.round(this.birth_individual_amount / (((this.generation_num - 1) * this.individual_num + 1)) * 100);
                         $scope.detailLogInfo.push('诞生第' + (gid + 1) + '代新个体(ID：' + robey_id + '), 父母适应度：'
                                 + parents_info.father.fitness + '，' + parents_info.mother.fitness);
                         //$('#generation_box').append('<li>第' + gid + '代诞生新个体(ID' + robey_id + ')</li>');
@@ -670,6 +690,7 @@ tags : [algorithm, genetic]
                         //$('#generation_box').append('<li>第' + gid + '代繁衍完成， 父代平均适应度：' + parents_info.fitness + '</li>');
                     },
                     onFinish : function(gid, robey_id, robey, parents_info) {
+                        $scope.rateOfProgress = 100;
                         $scope.mainLogInfo.push('进化完成，适应度：父 '
                                 + parents_info.father.fitness + '，母 ' + parents_info.mother.fitness);
                         //$('#generation_box').append('<li>进化完成，父亲适应度：'
@@ -680,19 +701,23 @@ tags : [algorithm, genetic]
                         $scope.mainLogInfo.push('进化即将终止');
                     },
                     onStop : function() {
+                        $scope.rateOfProgress = 0;
                         $scope.mainLogInfo.push('进化被终止');
                     }
                 };
+
                 $scope.start = function () {
                     $scope.mainLogInfo.push('进化开始');
-                    Evolution.config($scope.config);
+                    var config = $scope.config;
+                    config.event = eventCallback;
+                    Evolution.config(config);
                     Evolution.start();
                 };
                 $scope.stop = function() {
                     Evolution.stop();
                 };
 
-                //scope少放东西，异步，时间间隔
+                //异步，时间间隔
             });
 
 
