@@ -640,7 +640,7 @@ tags : [algorithm, genetic]
                         //$('#generation_box').append('<li>第' + gid + '代繁衍开始</li>');
                     },
                     onNewBabyBirth : function(gid, robey_id, robey, parents_info) {
-                        $scope.logInfo.push('第' + (gid + 1) + '代诞生新个体(ID：' + robey_id + '), 适应度：父 '
+                        $scope.logInfo.push('  诞生第' + (gid + 1) + '代新个体(ID：' + robey_id + '), 适应度：父 '
                                 + parents_info.father.fitness + '，母 ' + parents_info.mother.fitness);
                         //$('#generation_box').append('<li>第' + gid + '代诞生新个体(ID' + robey_id + ')</li>');
                     },
