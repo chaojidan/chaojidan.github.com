@@ -10,6 +10,18 @@ tags : [algorithm, genetic]
 <div ng-app="evolutionApp" ng-controller="evolutionController">
     <div class="row">
         <div class="col-md-12" style="margin-bottom: 20px;">
+            <h4>说明</h4>
+            <div>
+                <p>这是一个模拟生物遗传进化的程序，假设机器人罗比的世界是一个10*10的网格，网格四周是墙，网格中间随机分布着一些易拉罐（每个格子最多有1个易拉罐），
+                    罗比的工作就是清理这些易拉罐。</p>
+                <p>每次清扫任务罗比可以执行200个动作，动作可以是以下7种：向北移动，向南移动，向西移动，向东移动，不动，捡拾罐子，随机移动。
+                    每个动作都会受到奖励或惩罚，如果撞墙则扣5分并弹回原来的格子，如果执行捡拾罐子的动作但是地上却没有罐子则扣1分，
+                    如果成功捡到一个罐子加10分，最后的得分称作罗比本次任务的适应度，执行若干次任务后会得到一个平均的适应度，记为当前个体的适应度，
+                    适应度越高说明罗比越聪明。</p>
+                <p>罗比想要获得高的得分，就必须尽可能多的收集罐子，别撞墙，没罐子的时候别去捡。</p>
+                <p>这个问题并不是很难，人工为罗比设计一个好策略不是很难，但是我们没有这么做，而是使用遗传算法，让计算机替我们进化出来一个好策略。</p>
+                <p>更详细的解释未完待续...</p>
+            </div>
             <form class="form-inline">
                 <div class="form-group">
                     <label for="ipt_generation" class="sr-only">进化多少代</label>
@@ -25,11 +37,11 @@ tags : [algorithm, genetic]
                 </div>
                 <div class="form-group">
                     <label for="ipt_task_num" class="sr-only">个体执行任务数</label>
-                    <input type="password" class="form-control" id="ipt_task_num" placeholder="个体执行任务数">
+                    <input type="password" class="form-control" id="ipt_task_num" disabled placeholder="个体执行任务数">
                 </div>
                 <div class="form-group">
                     <label for="ipt_step_num" class="sr-only">一次任务走多少步</label>
-                    <input type="password" class="form-control" id="ipt_step_num" placeholder="一次任务走多少步">
+                    <input type="password" class="form-control" id="ipt_step_num" disabled placeholder="一次任务走多少步">
                 </div>
                 <button type="button" class="btn btn-default" ng-click="start()">开始进化</button>
                 <button type="button" class="btn btn-default" ng-click="stop()">终止</button>
@@ -359,17 +371,17 @@ tags : [algorithm, genetic]
                             } else {
                                 $interval.cancel(timer);
                                 self.fitness_avg = Math.round(self.fitness_sum / self.task_num);
-
+                                var run_time = new Date().getTime() - t;
                                 console.log('父代',self.parent_generation_id,
                                         '种群', self.population_id,
                                         '个体', self.id,
                                         '总适应度', self.fitness_sum,
                                         '生存次数:', self.task_num,
                                         '平均适应度', self.fitness_avg,
-                                        '用时:', new Date().getTime() - t);
+                                        '用时:', run_time);
 
                                 if (self.event.finish) {
-                                    self.event.finish(self.id, self.fitness_avg);
+                                    self.event.finish(self.id, self.fitness_avg, run_time);
                                 }
                             }
                         }, 0);
@@ -400,10 +412,10 @@ tags : [algorithm, genetic]
                                 //console.log('父代',self.parent_generation_id, '种群', self.population_id, '当前个体：' , self.curr_individual_num );
                                 var process = new Process(self.curr_individual_num, self.collection[self.curr_individual_num],
                                         self.parent_generation_id, self.population_id);
-                                process.start(self.situationMap, function(id, fitness) {
+                                process.start(self.situationMap, function(id, fitness, run_time) {
                                     //console.log('父代',self.parent_generation_id, '种群',
                                     //        self.population_id, '当前个体：' , id, 'fitness_avg', fitness);
-                                    self.emit(id, fitness);
+                                    self.emit(id, fitness, run_time);
                                 });
                                 self.curr_individual_num++;
                             } else {
@@ -411,7 +423,7 @@ tags : [algorithm, genetic]
                             }
                         }, 100);
                     },
-                    emit : function(id, fitness) {
+                    emit : function(id, fitness, run_time) {
                         this.process_result.push({id : id, fitness: fitness});
                         this.finish_num++;
                         if (this.finish_num == this.collection.length) {
@@ -529,7 +541,7 @@ tags : [algorithm, genetic]
                     final_robey : null,
                     current_generation : 0,
                     generation_num : 100, //繁衍多少代
-                    individual_num : 200, //每一代个体数量
+                    individual_num : 100, //每一代个体数量
 
                     yGeneration : null,
 
@@ -649,7 +661,7 @@ tags : [algorithm, genetic]
                         //$('#generation_box').append('<li>第' + gid + '代繁衍开始</li>');
                     },
                     onNewBabyBirth : function(gid, robey_id, robey, parents_info) {
-                        $scope.detailLogInfo.push('  诞生第' + (gid + 1) + '代新个体(ID：' + robey_id + '), 父母适应度：'
+                        $scope.detailLogInfo.push('诞生第' + (gid + 1) + '代新个体(ID：' + robey_id + '), 父母适应度：'
                                 + parents_info.father.fitness + '，' + parents_info.mother.fitness);
                         //$('#generation_box').append('<li>第' + gid + '代诞生新个体(ID' + robey_id + ')</li>');
                     },
