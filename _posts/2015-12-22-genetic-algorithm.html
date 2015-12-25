@@ -48,13 +48,15 @@ tags : [algorithm, genetic]
                 <button type="button" class="btn btn-default" ng-click="start()">开始进化</button>
                 <button type="button" class="btn btn-default" ng-click="stop()">终止</button>
             </form>
+            <div>
+                <h4>进度：</h4>
+                <uib-progressbar class="progress-striped active" value="rateOfProgress">
+                    <i ng-bind="rateOfProgress"></i> %
+                </uib-progressbar>
+            </div>
         </div>
         <div class="col-md-6">
-            <h4>主进度：</h4>
-
-            <uib-progressbar class="progress-striped active" value="rateOfProgress">
-                <i ng-bind="rateOfProgress"></i>%
-            </uib-progressbar>
+            <h4>进度信息：</h4>
 
             <div style="height: 300px; overflow-x: hidden; overflow-y: auto;
             border: 1px solid #999; border-radius : 0.5em;">
@@ -73,12 +75,20 @@ tags : [algorithm, genetic]
                     </li>
                 </ul>
             </div>
-            <div>
-                <p style="word-break: break-all; word-wrap: break-word;"></p>
-            </div>
         </div>
         <div class="col-md-6">
-
+            <div>
+                <h4>第<span ng-bind="lastPopulation.generation_id"></span>代种群基因：</h4>
+                <div style="height: 500px; overflow-x: auto; overflow-y: auto;
+            border: 1px solid #999; border-radius : 0.5em;">
+                    <ul style="margin-top: 5px;">
+                        <li ng-repeat="robey in lastPopulation.robey_list track by $index">
+                            <span ng-bind="robey.getGene()"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <p style="word-break: break-all; word-wrap: break-word;"></p>
         </div>
     </div>
 </div>
@@ -555,6 +565,7 @@ tags : [algorithm, genetic]
                     yGeneration : null,
 
                     event : {
+                        onInit : null,
                         onGenerationStart : null,
                         onNewBabyBirth : null,
                         onGenerationFinish : null,
@@ -585,7 +596,6 @@ tags : [algorithm, genetic]
                                 curr_num++;
                             } else {
                                 $interval.cancel(timer);
-                                //console.log(population);
                                 callback(population);
                             }
                         }, 10);
@@ -604,6 +614,9 @@ tags : [algorithm, genetic]
                         if (!population || population.length == 0) {
                             //初始种群
                             this.makeInitPopulation(function(population) {
+                                if (self.event.onInit) {
+                                    self.event.onInit(0, population);
+                                }
                                 self.evolve(population);
                             });
                         } else {
@@ -670,31 +683,36 @@ tags : [algorithm, genetic]
                     task_num : 200,  //获取平均适应度要执行多少次任务
                     ipt_step_num : 200 //每一次任务要走多少步
                 };
-                $scope.mainLogInfo = [];
                 $scope.rateOfProgress = 0;
+                $scope.mainLogInfo = [];
                 $scope.detailLogInfo = [];
+                $scope.lastPopulation = {
+                    generation_id : 0,
+                    robey_list : []
+                };
                 var eventCallback = {
+                    onInit : function(gid, population) {
+                        $scope.lastPopulation.generation_id = gid;
+                        $scope.lastPopulation.robey_list = population;
+                    },
                     onGenerationStart : function(gid) {
                         $scope.mainLogInfo.push('第' + gid + '代繁衍开始');
                         //console.log('第' + gid + '代繁衍开始');
-                        //$('#generation_box').append('<li>第' + gid + '代繁衍开始</li>');
                     },
                     onNewBabyBirth : function(gid, robey_id, robey, parents_info) {
                         $scope.rateOfProgress = Math.round(this.birth_individual_amount / (((this.generation_num - 1) * this.individual_num + 1)) * 100);
                         $scope.detailLogInfo.push('诞生第' + (gid + 1) + '代新个体(ID：' + robey_id + '), 父母适应度：'
                                 + parents_info.father.fitness + '，' + parents_info.mother.fitness);
-                        //$('#generation_box').append('<li>第' + gid + '代诞生新个体(ID' + robey_id + ')</li>');
                     },
                     onGenerationFinish : function(gid, childrens, parents_info) {
                         $scope.mainLogInfo.push('第' + gid + '代繁衍完成， 父代平均适应度：' + parents_info.fitness);
-                        //$('#generation_box').append('<li>第' + gid + '代繁衍完成， 父代平均适应度：' + parents_info.fitness + '</li>');
+                        $scope.lastPopulation.generation_id = gid;
+                        $scope.lastPopulation.robey_list = childrens;
                     },
                     onFinish : function(gid, robey_id, robey, parents_info) {
                         $scope.rateOfProgress = 100;
                         $scope.mainLogInfo.push('进化完成，适应度：父 '
                                 + parents_info.father.fitness + '，母 ' + parents_info.mother.fitness);
-                        //$('#generation_box').append('<li>进化完成，父亲适应度：'
-                        //        + parents_info.father.fitness + '，母亲适应度：' + parents_info.mother.fitness + '</li>');
                         //console.log('进化完成', robey);
                     },
                     onWillStop : function() {
