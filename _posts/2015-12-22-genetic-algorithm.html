@@ -19,7 +19,7 @@ tags : [algorithm, genetic]
                     如果成功捡到一个罐子加10分，最后的得分称作罗比本次任务的适应度，执行若干次任务后会得到一个平均的适应度，记为当前个体的适应度，
                     适应度越高说明罗比越聪明。</p>
                 <p>罗比想要获得高的得分，就必须尽可能多的收集罐子，别撞墙，没罐子的时候别去捡。</p>
-                <p>这个问题并不是很难，人工为罗比设计一个好策略不是很难，但是我们没有这么做，而是使用遗传算法，让计算机替我们进化出来一个好策略。</p>
+                <p>这个问题很简单，人工为罗比设计一个好策略不是很难，但是我们没有这么做，而是使用遗传算法，让计算机替我们进化出来一个好策略。</p>
                 <p>更详细的解释未完待续...</p>
             </div>
             <form class="form-inline">
@@ -652,7 +652,7 @@ tags : [algorithm, genetic]
                 $scope.detailLogInfo = [];
                 $scope.config = {
                     generation_num : 100, //繁衍多少代
-                    individual_num : 100,  //每一代个体数量
+                    individual_num : 30,  //每一代个体数量
                     task_num : 100,  //获取平均适应度要生存多少次
                     ipt_step_num : 100, //每一次生存要走多少步
                     onGenerationStart : function(gid) {
