@@ -10,9 +10,9 @@ tags : [algorithm, genetic]
 <script src="/assets/themes/bootstrap-3/bootstrap/js/ui-bootstrap-custom-tpls-0.14.3.min.js"></script>
 <style>
     .jar {
-        background: url(/images/page/jar.jpg) no-repeat;
+        background: url(/images/page/jar.jpg) no-repeat 100% 100%;
     }
-    .robey { width: 50px; height: 50px;}
+    .robey { width: 40px; height: 40px; margin-top: 4px;}
 </style>
 <div ng-app="evolutionApp" ng-controller="evolutionController">
     <div class="row">
@@ -56,7 +56,7 @@ tags : [algorithm, genetic]
             <div>
                 <h4>进度：</h4>
                 <uib-progressbar class="progress-striped active" value="rateOfProgress">
-                    <i ng-bind="rateOfProgress"></i> %
+                    &nbsp;<i ng-bind="rateOfProgress"></i> %
                 </uib-progressbar>
             </div>
         </div>
@@ -112,16 +112,40 @@ tags : [algorithm, genetic]
 
     <div style="margin-bottom: 20px;" class="row">
         <div class="col-md-6">
-            <h4>罗比的基因</h4>
+            <h4>当前罗比的策略</h4>
+            <div style="height: 763px; overflow-x: auto; overflow-y: auto;
+            border: 1px solid #999; border-radius : 0.5em;">
+                <table class="table">
+                    <tr>
+                        <th>情景</th>
+                        <th>动作</th>
+                    </tr>
+                    <tr>
+                        <th>北,南,东,西,中</th>
+                        <th></th>
+                    </tr>
+                    <tr ng-repeat="(situation, action_id) in situationMap">
+                        <td>
+                            <span ng-bind="situation|convSituation"></span>
+                        </td>
+                        <td>
+                            <span ng-bind="robey.getAction(action_id)|convAction"></span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+        <div class="col-md-6">
+            <h4>当前罗比的基因</h4>
             <form class="form">
-                <textarea class="form-control" rows="6" ng-model="gene">
+                <textarea class="form-control" rows="7" ng-model="gene">
                 </textarea>
-                <p>
+                <p class="text-right">
                     <button type="button" class="btn btn-default" ng-click="performTask()">执行任务</button>
                 </p>
             </form>
-        </div>
-        <div class="col-md-6">
+
             <h4>动画演示</h4>
             <p>第<span ng-bind="step"></span>步，
                 适应度：<span ng-bind="fitness"></span>
@@ -132,8 +156,8 @@ tags : [algorithm, genetic]
             </p>
             <table class="table table-bordered">
                 <tr ng-repeat="y in []|range : 0 : world.width - 1">
-                    <td ng-repeat="x in []|range : 0 : world.height - 1" style="height:50px; width:50px; padding: 0;">
-                        <div ng-class="{jar:world.getField(x,y)}" style="width:50px;height:50px;">
+                    <td ng-repeat="x in []|range : 0 : world.height - 1" style="height:44px; width:44px; padding: 0;">
+                        <div ng-class="{jar:world.getField(x,y)}" style="width:100%;height:100%;">
                             <img ng-src="/images/page/robey.png" ng-if="x==position.x && y==position.y" class="robey">
                         </div>
                     </td>
@@ -186,6 +210,9 @@ tags : [algorithm, genetic]
                                 this.gene.push(randomInt(0, 6));
                             }
                         } else {
+                            if (gene.length !== 243) {
+                                console.log('基因长度异常', gene);
+                            }
                             this.gene = gene;
                         }
                         return this.gene;
@@ -234,7 +261,7 @@ tags : [algorithm, genetic]
                     this.task_id = task_id;
                     this.robey_id = robey_id;
                     this.situationMap = situationMap;
-                    this.step_num = 200;
+                    this.step_num = 100;
                     this.position = {
                         x : 0,
                         y : 0
@@ -336,7 +363,7 @@ tags : [algorithm, genetic]
                                 r = this.moveRandom(); //随机移动
                                 break;
                             default :
-                                console.log('error action_id:' + action_id);
+                                console.log('error action_id:' + action_id, 'gene_id:' + gene_id);
                         }
                         return {
                             fitness : this.getFitness(),
@@ -461,7 +488,7 @@ tags : [algorithm, genetic]
                     this.id = id;
                     this.robey = robey;
                     this.situationMap = situationMap;
-                    this.task_num = 200;  //200
+                    this.task_num = 100;  //200
                     this.curr_task_num = 0;
                     this.fitness_sum = 0;
                     this.fitness_avg = 0;
@@ -509,11 +536,15 @@ tags : [algorithm, genetic]
                 };
 
                 //一代种群的进化，选出最优的一对作为父母，基因遗传到下一代，并且加入一定基因变异
-                var RobeyChildren = function(situationMap, parent_gid, population_id) {
-                    this.parent_generation_id = parent_gid ? parent_gid : 0; //父代id
-                    this.population_id = population_id ? population_id : 0; //种群id
+                var RobeyChildren = function(config) {
+                    this.situationMap = config.situationMap;
+                    this.parent_generation_id = config.parent_generation_id ? config.parent_generation_id : 0; //父代id
+                    this.population_id = config.population_id ? config.population_id : 0; //种群id
+                    this.step_num = config.step_num;
+                    this.task_num = config.task_num;
+
                     this.collection = [];
-                    this.situationMap = situationMap;
+
                     this.finish_num = 0;
                     this.process_result = [];
                     this.curr_individual_num = 0;
@@ -541,7 +572,7 @@ tags : [algorithm, genetic]
                             } else {
                                 $interval.cancel(timer);
                             }
-                        }, 400);
+                        }, 100);
                     },
                     emit : function(id, fitness, run_time) {
                         this.process_result.push({id : id, fitness: fitness});
@@ -562,14 +593,16 @@ tags : [algorithm, genetic]
                     inherit : function(parents) {
                         var r = randomInt(0, 1),
                                 father = this.collection[parents[r].id],
-                                mother = this.collection[parents[r===1 ? 0 : 1].id];
+                                mother = this.collection[parents[r===1 ? 0 : 1].id],
+                                gene_length = 243;
                         //console.log('遗传', father, parents[0].fitness, mother, parents[1].fitness);
-                        var n = randomInt(0, 243);
+                        var n = randomInt(gene_length / 3, gene_length / 3 * 2);
+                        //console.log(n, father.getGene().slice(0, n), mother.getGene().slice(n, gene_length));
                         //繁衍后代
-                        var newGene = father.getGene().slice(0, n).concat(mother.getGene().slice(n, 243));
+                            var newGene = father.getGene().slice(0, n).concat(mother.getGene().slice(n));
                         //console.log(newGene);
                         //基因变异
-                        var variation = randomInt(0, 243);
+                        var variation = randomInt(0, gene_length-1);
                         //console.log(variation, newGene[variation]);
                         newGene[variation] = randomInt(0, 6);
                         //console.log('curr:' + newGene[variation]);
@@ -583,21 +616,25 @@ tags : [algorithm, genetic]
                 };
 
                 //生成新一代种群
-                var YoungerGeneration = function(parent_gid, population_num, situationMap) {
-                    this.parent_generation_id = parent_gid; //父代
-                    this.population_num = population_num ? population_num : 100; //最少2个,种群数，也是新一代个体数
+                var YoungerGeneration = function(config) {
+                    this.situationMap = config.situationMap;
+                    this.parent_generation_id = config.parent_generation_id; //父代
+                    this.population_num = config.population_num ? config.population_num : 100; //最少2个,种群数，也是新一代个体数
+                    this.step_num = config.step_num;
+                    this.task_num = config.task_num;
+
                     this.parent_fitness_sum = 0;
                     this.parent_fitness_avg = 0;
                     this.childrens = [];
                     this.curr_population_num = 0;
                     this.status = 0;
-                    this.interval = this.population_num * 150;
+                    this.interval = this.population_num * 100;
                     this.event = {
                         newBabyBirth : null,
                         finish : null,
                         stop : null
                     };
-                    this.situationMap = situationMap;
+
                 };
                 YoungerGeneration.prototype = {
                     start : function(population, onNewBabyBirth, onFinish, onStop) {
@@ -605,12 +642,15 @@ tags : [algorithm, genetic]
                         self.event.finish = onFinish;
                         self.event.newBabyBirth = onNewBabyBirth;
                         self.event.stop = onStop;
+
                         //同一个种群进行population_num次繁衍，每一次繁衍生成一个新后代，做为下一代种群的一员
-
-                        //console.log('开启新进程');
-                        //console.log('父代', self.parent_generation_id, '当前种群：', self.curr_population_num );
-
-                        var robeyChildren = new RobeyChildren(self.situationMap, self.parent_generation_id, self.curr_population_num);
+                        var robeyChildren = new RobeyChildren({
+                            situationMap : self.situationMap,
+                            parent_generation_id : self.parent_generation_id,
+                            population_id : self.curr_population_num,
+                            task_num : self.task_num,
+                            step_num : self.step_num
+                        });
                         //产生一个新后代
                         robeyChildren.multiply(population, function(children_id, children, parents_info) {
                             self.emit(children_id, children, parents_info);
@@ -618,9 +658,13 @@ tags : [algorithm, genetic]
                         self.curr_population_num++;
                         var timer = $interval(function() {
                             if (self.status !== -1 && self.curr_population_num < self.population_num) {
-                                //console.log('开启新进程');
-                                //console.log('父代', self.parent_generation_id, '当前种群：', self.curr_population_num );
-                                var robeyChildren = new RobeyChildren(self.situationMap, self.parent_generation_id, self.curr_population_num);
+                                var robeyChildren = new RobeyChildren({
+                                    situationMap : self.situationMap,
+                                    parent_generation_id : self.parent_generation_id,
+                                    population_id : self.curr_population_num,
+                                    task_num : self.task_num,
+                                    step_num : self.step_num
+                                });
                                 //产生一个新后代
                                 robeyChildren.multiply(population, function(children_id, children, parents_info) {
                                     self.emit(children_id, children, parents_info);
@@ -637,9 +681,9 @@ tags : [algorithm, genetic]
                         }, this.interval);
                     },
                     emit : function(children_id, children, parents_info) {
-                        if (this.status === -1) {
+/*                        if (this.status === -1) {
                             return;
-                        }
+                        }*/
                         this.childrens.push(children);
                         this.parent_fitness_sum += parents_info.father.fitness + parents_info.mother.fitness;
                         if (this.event.newBabyBirth) {
@@ -664,6 +708,8 @@ tags : [algorithm, genetic]
                     current_generation : 0,
                     generation_num : 100, //繁衍多少代
                     individual_num : 100, //每一代个体数量
+                    task_num : 200,  //获取平均适应度要执行多少次任务
+                    step_num : 200, //每一次任务要走多少步
 
                     birth_individual_amount : 0, //当前诞生个体总数（用于计算进度）
 
@@ -683,6 +729,8 @@ tags : [algorithm, genetic]
                     config : function(cfg) {
                         this.generation_num = cfg.generation_num;
                         this.individual_num = cfg.individual_num;
+                        this.task_num = cfg.task_num;  //获取平均适应度要执行多少次任务
+                        this.step_num = cfg.step_num; //每一次任务要走多少步
                         this.event = cfg.event;
                     },
                     makeInitPopulation : function(callback) {
@@ -733,8 +781,13 @@ tags : [algorithm, genetic]
                             self.event.onGenerationStart(self.current_generation + 1);
                         }
                         if (self.generation_num == 1 || self.current_generation == self.generation_num - 1) {
-                            //最后一代
-                            var robeyChildren = new RobeyChildren(self.situationMap, self.current_generation);
+                            //最后一代只生成1个
+                            var robeyChildren = new RobeyChildren({
+                                situationMap : self.situationMap,
+                                parent_generation_id : self.parent_generation_id,
+                                task_num : self.task_num,
+                                step_num : self.step_num
+                            });
                             robeyChildren.multiply(population, function(children_id, children, parents_info) {
                                 self.final_robey = children;
                                 if (self.event.onFinish) {
@@ -744,16 +797,22 @@ tags : [algorithm, genetic]
                                 self.running = false;
                             });
                         } else {
-                            self.yGeneration = new YoungerGeneration(self.current_generation, self.individual_num, self.situationMap);
-                            //console.log("第" + self.current_generation + '代');
+                            self.yGeneration = new YoungerGeneration({
+                                situationMap : self.situationMap,
+                                parent_generation_id : self.current_generation,
+                                population_num : self.individual_num, //下一代个体数量同时也是上一代种群数量
+                                task_num : self.task_num,
+                                step_num : self.step_num
+                            });
                             self.yGeneration.start(population,
+                                    //诞生新个体
                                     function(children_id, children, parents_info) {
                                         self.birth_individual_amount++;
                                         if (self.event.onNewBabyBirth) {
                                             self.event.onNewBabyBirth.call(self, self.current_generation + 1, children_id, children, parents_info);
-                                            //self.onNewBabyBirth(self.current_generation + 1, children_id, children, parents_info);
                                         }
                                     },
+                                    //一个群体进化完成
                                     function(childrens, parents_info) {
                                         if (self.event.onGenerationFinish) {
                                             self.event.onGenerationFinish(self.current_generation + 1, childrens, parents_info);
@@ -810,7 +869,7 @@ tags : [algorithm, genetic]
                                 + parents_info.father.fitness + '，' + parents_info.mother.fitness);
                     },
                     onGenerationFinish : function(gid, childrens, parents_info) {
-                        $scope.mainLogInfo.push('第' + gid + '代繁衍完成， 父代平均适应度：' + parents_info.fitness);
+                        $scope.mainLogInfo.push('第' + gid + '代繁衍完成， 下一代平均适应度：' + parents_info.fitness);
                         $scope.lastPopulation.generation_id = gid;
                         $scope.lastPopulation.robey_list = childrens;
                     },
@@ -835,29 +894,27 @@ tags : [algorithm, genetic]
                     var config = $scope.config;
                     config.event = eventCallback;
                     Evolution.config(config);
-                    Evolution.start();
+                    Evolution.start(); //可以指定初始种群
                 };
                 $scope.stop = function() {
                     Evolution.stop();
                 };
 
-//[2,4,0,1,0,5,0,6,3,6,3,6,1,6,5,0,1,5,2,3,0,6,1,0,0,6,6,0,1,2,4,0,1,6,3,4,0,0,6,4,5,4,1,3,0,2,1,5,0,2,5,4,1,1,6,1,3,6,1,6,0,2,6,0,5,1,3,4,3,2,4,2,1,3,2,4,4,5,1,6,0,1,5,6,4,4,6,3,5,2,6,0,2,6,0,0,0,0,0,1,2,6,4,1,1,4,6,1,0,3,5,0,4,2,2,3,3,1,2,3,0,4,1,0,4,0,6,1,3,0,4,3,5,5,4,4,2,5,4,6,6,1,0,5,4,3,4,0,6,0,1,0,0,1,3,3,1,5,2,1,0,5,4,5,5,1,2,5,4,5,1,3,2,6,6,1,5,3,4,0,5,6,3,0,1,6,0,5,3,0,4,1,4,6,2,0,4,2,6,3,3,3,5,0,0,6,5,3,4,4,4,5,3,6,1,4,3,3,1,6,1,5,3,2,4,0,4,0,1,5,0,5,6,6,5,6,2,6,2,4,2,2,3
-                //[6,4,0,1,0,5,0,6,3,6,3,6,1,6,5,0,1,5,2,3,0,6,1,0,0,6,6,0,1,2,4,0,1,6,3,4,0,0,6,4,5,4,2,0,2,4,2,5,4,2,1,4,1,5,3,0,1,6,1,6,0,2,6,0,5,1,3,4,3,2,4,2,1,3,2,4,4,5,1,6,0,1,5,6,4,4,6,3,5,2,6,0,2,6,0,0,0,0,0,1,2,6,4,1,1,4,6,1,0,3,5,0,4,2,2,3,3,5,2,3,0,4,1,0,4,0,6,1,3,0,4,3,5,5,4,4,2,5,4,6,6,1,0,5,4,3,4,0,6,0,1,0,0,1,3,3,1,5,2,1,0,5,4,2,5,5,2,5,4,5,1,3,2,6,6,1,5,3,4,0,5,6,3,2,4,4,4,1,2,1,4,2,4,1,2,2,1,3,5,2,3,6,0,2,0,3,5,1,5,4,4,5,3,6,1,4,3,3,1,6,1,5,3,2,4,0,4,0,1,5,0,5,6,6,5,6,2,6,2,4,2,2,4
 
-                $scope.gene = '2,4,0,1,0,5,0,6,3,6,3,6,1,6,5,0,1,5,2,3,0,6,1,0,0,6,6,0,1,2,4,0,1,6,3,4,0,0,6,4,5,4,1,3,0,2,1,5,0,2,5,4,1,1,6,1,3,6,1,6,0,2,6,0,5,1,3,4,3,2,4,2,1,3,2,4,4,5,1,6,0,1,5,6,4,4,6,3,5,2,6,0,2,6,0,0,0,0,0,1,2,6,4,1,1,4,6,1,0,3,5,0,4,2,2,3,3,1,2,3,0,4,1,0,4,0,6,1,3,0,4,3,5,5,4,4,2,5,4,6,6,1,0,5,4,3,4,0,6,0,1,0,0,1,3,3,1,5,2,1,0,5,4,5,5,1,2,5,4,5,1,3,2,6,6,1,5,3,4,0,5,6,3,0,1,6,0,5,3,0,4,1,4,6,2,0,4,2,6,3,3,3,5,0,0,6,5,3,4,4,4,5,3,6,1,4,3,3,1,6,1,5,3,2,4,0,4,0,1,5,0,5,6,6,5,6,2,6,2,4,2,2,3  ';
+                $scope.gene = '5,0,3,4,6,0,6,4,4,0,5,6,5,2,1,3,5,1,4,3,2,1,5,1,4,1,0,0,5,5,6,4,2,4,0,2,3,3,0,2,2,1,3,3,3,3,0,0,2,3,2,5,2,1,1,1,6,3,1,4,6,1,0,4,6,5,4,1,2,3,0,4,2,6,0,1,5,5,0,3,2,6,5,1,2,5,5,2,1,3,3,0,0,0,3,5,2,3,4,5,3,4,4,0,5,4,2,6,5,6,2,2,1,1,1,3,5,5,5,3,4,1,2,1,6,4,2,3,0,5,0,6,3,1,0,1,1,1,1,3,6,2,0,3,1,4,1,6,2,0,6,3,6,4,1,6,1,0,4,4,4,1,5,5,0,2,4,6,2,1,3,4,2,5,2,2,0,2,3,2,6,6,2,1,5,4,1,2,1,3,0,3,2,1,6,5,0,1,6,1,5,0,0,0,3,3,5,3,4,5,3,3,1,3,5,0,3,0,1,0,3,6,0,1,5,5,1,1,2,2,4,0,5,2,6,4,3,6,0,3,4,2,4';
                 $scope.world = new World();
                 $scope.position = { x:0, y:0 };
                 $scope.fitness = 0;
                 $scope.step = 0;
                 $scope.performTask = function() {
-                    var situationMap = Situation.make();
-                    var robey = new Robey($scope.gene.split(','));
+                    $scope.situationMap = Situation.make();
+                    $scope.robey = new Robey($scope.gene.split(','));
                     //console.log(robey);
 
-                    var task = new Task(0, 0, robey, situationMap, $scope.world);
-                     var timer = $interval(function() {
+                    var task = new Task(0, 0,  $scope.robey,  $scope.situationMap, $scope.world);
+                    var timer = $interval(function() {
                         if ($scope.step < 200) {
-                            var r = task.next(situationMap);
+                            var r = task.next();
                             $scope.position = task.getPosition();
                             $scope.fitness = task.getFitness();
                             $scope.action = r.action;
@@ -878,6 +935,21 @@ tags : [algorithm, genetic]
                     for (var i = start; i <= total; i++)
                         input.push(i);
                     return input;
+                };
+            })
+            .filter('convSituation', function() {
+                return function(input) {
+                    var s = input.replace(new RegExp("empty", 'g'), '空');
+                    s = s.replace(new RegExp("wall", 'g'), '墙');
+                    s = s.replace(new RegExp("jar", 'g'), '罐');
+                    return s;
+                };
+            })
+            .filter('convAction', function() {
+                return function(input) {
+                    var act = ['向北移动', '向南移动', '向东移动', '向西移动', '不动', '捡拾罐子', '随机移动'];
+
+                    return act[parseInt(input)] + '(' + input + ')';
                 };
             });
 
