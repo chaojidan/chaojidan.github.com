@@ -118,7 +118,7 @@ tags : [algorithm, genetic]
                 <table class="table">
                     <tr>
                         <th>情景</th>
-                        <th>动作</th>
+                        <th>执行动作</th>
                     </tr>
                     <tr>
                         <th>北,南,东,西,中</th>
@@ -906,11 +906,9 @@ tags : [algorithm, genetic]
                 $scope.position = { x:0, y:0 };
                 $scope.fitness = 0;
                 $scope.step = 0;
+                $scope.situationMap = Situation.make();
+                $scope.robey = new Robey($scope.gene.split(','));
                 $scope.performTask = function() {
-                    $scope.situationMap = Situation.make();
-                    $scope.robey = new Robey($scope.gene.split(','));
-                    //console.log(robey);
-
                     var task = new Task(0, 0,  $scope.robey,  $scope.situationMap, $scope.world);
                     var timer = $interval(function() {
                         if ($scope.step < 200) {
