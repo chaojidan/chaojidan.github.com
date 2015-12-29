@@ -30,31 +30,43 @@ tags : [algorithm, genetic]
                 <p>更详细的解释未完待续...</p>
             </div>
             <form class="form-inline">
+
                 <div class="form-group">
-                    <label for="ipt_generation" class="sr-only">进化多少代</label>
+                    <label for="ipt_generation">多少代</label>
                     <input type="number" class="form-control" id="ipt_generation"
                            placeholder="进化多少代"
                            ng-model="config.generation_num">
                 </div>
                 <div class="form-group">
-                    <label for="ipt_individual_num" class="sr-only">每一代个体数量</label>
+                    <label for="ipt_individual_num">每代个体数</label>
                     <input type="number" class="form-control" id="ipt_individual_num"
                            placeholder="每一代个体数量"
                            ng-model="config.individual_num">
                 </div>
                 <div class="form-group">
-                    <label for="ipt_task_num" class="sr-only">个体执行任务数</label>
-                    <input type="password" class="form-control" id="ipt_task_num" disabled placeholder="个体执行任务数">
+                    <label for="ipt_task_num">个体执行任务数</label>
+                    <input type="number" class="form-control" id="ipt_task_num"
+                           placeholder="个体执行任务数"
+                           ng-model="config.task_num">
                 </div>
                 <div class="form-group">
-                    <label for="ipt_step_num" class="sr-only">一次任务走多少步</label>
-                    <input type="password" class="form-control" id="ipt_step_num" disabled placeholder="一次任务走多少步">
+                    <label for="ipt_step_num">一次任务多少步</label>
+                    <input type="number" class="form-control" id="ipt_step_num"
+                           placeholder="一次任务走多少步"
+                           ng-model="config.step_num">
                 </div>
-                <button type="button" class="btn btn-default" ng-click="start()">开始进化</button>
-                <button type="button" class="btn btn-default" ng-click="stop()">终止</button>
+
+                <div class="text-right" style="margin: 20px 20px 0 0;">
+                <div class="form-group">
+                    <button type="button" class="btn btn-default" ng-click="start()">开始进化</button>
+                    <button type="button" class="btn btn-default" ng-click="stop()">终止</button>
+                </div>
+                </div>
+
+
             </form>
             <div>
-                <h4>进度：</h4>
+                <h4>进度</h4>
                 <uib-progressbar class="progress-striped active" value="rateOfProgress">
                     &nbsp;<i ng-bind="rateOfProgress"></i> %
                 </uib-progressbar>
@@ -63,7 +75,7 @@ tags : [algorithm, genetic]
     </div>
     <div class="row">
         <div class="col-md-6">
-            <h4>进度信息：</h4>
+            <h4>进度信息</h4>
 
             <div style="height: 300px; overflow-x: hidden; overflow-y: auto;
             border: 1px solid #999; border-radius : 0.5em;">
@@ -73,12 +85,12 @@ tags : [algorithm, genetic]
                     </li>
                 </ul>
             </div>
-            <h4>进度细节：</h4>
+            <h4>进度细节 <small>（适应度后面跟着的是被选中的概率）</small></h4>
             <div style="height: 500px; overflow-x: hidden; overflow-y: auto;
             border: 1px solid #999; border-radius : 0.5em;">
                 <ul style="margin-top: 5px;">
                     <li ng-repeat="log in detailLogInfo track by $index">
-                        <span ng-bind="log"></span>
+                        <small><span ng-bind="log"></span></small>
                     </li>
                 </ul>
             </div>
@@ -96,7 +108,7 @@ tags : [algorithm, genetic]
                 </div>
             </div>
 
-            <h4>最终进化基因：</h4>
+            <h4>最终进化基因</h4>
             <div style="height: 300px; border: 1px solid #999; border-radius : 0.5em;">
             <p style="word-break: break-all; word-wrap: break-word; margin:10px;" ng-bind="finalRobeyGene"></p>
             </div>
@@ -115,16 +127,25 @@ tags : [algorithm, genetic]
             <h4>当前罗比的策略</h4>
             <div style="height: 763px; overflow-x: auto; overflow-y: auto;
             border: 1px solid #999; border-radius : 0.5em;">
-                <table class="table">
+                <table class="table table-striped">
                     <tr>
-                        <th>情景</th>
+                        <th>情形ID</th>
+                        <th>
+                            情形
+                        </th>
                         <th>执行动作</th>
                     </tr>
                     <tr>
-                        <th>北,南,东,西,中</th>
+                        <th></th>
+                        <th>
+                            北,南,东,西,中
+                        </th>
                         <th></th>
                     </tr>
                     <tr ng-repeat="(situation, action_id) in situationMap">
+                        <td>
+                            <span ng-bind="action_id"></span>
+                        </td>
                         <td>
                             <span ng-bind="situation|convSituation"></span>
                         </td>
@@ -257,11 +278,11 @@ tags : [algorithm, genetic]
                 };
 
                 //单个个体的单次进化过程，得到单次适应度
-                var Task = function(task_id, robey_id, robey, situationMap, world) {
+                var Task = function(task_id, robey_id, robey, situationMap, step_num, world) {
                     this.task_id = task_id;
                     this.robey_id = robey_id;
                     this.situationMap = situationMap;
-                    this.step_num = 100;
+                    this.step_num = step_num;
                     this.position = {
                         x : 0,
                         y : 0
@@ -482,13 +503,14 @@ tags : [algorithm, genetic]
                 };
 
                 //单个个体在n个任务中的进化过程，得到平均适应度
-                var Process = function(id, robey, parent_gid, population_id, situationMap) {
+                var Process = function(id, robey, parent_gid, population_id, situationMap, task_num, step_num) {
                     this.parent_generation_id = parent_gid ? parent_gid : 0; //父代
                     this.population_id = population_id ? population_id : 0;
                     this.id = id;
                     this.robey = robey;
                     this.situationMap = situationMap;
-                    this.task_num = 100;  //200
+                    this.task_num = task_num;  //200
+                    this.step_num = step_num;
                     this.curr_task_num = 0;
                     this.fitness_sum = 0;
                     this.fitness_avg = 0;
@@ -503,7 +525,7 @@ tags : [algorithm, genetic]
                         var t = new Date().getTime();
                         var timer = $interval(function() {
                             if (self.curr_task_num < self.task_num) {
-                                var task = new Task(self.curr_task_num, self.id, self.robey, self.situationMap);
+                                var task = new Task(self.curr_task_num, self.id, self.robey, self.situationMap, self.step_num);
                                 var fitness = task.start();
                                 self.fitness_sum += fitness;
 
@@ -548,6 +570,10 @@ tags : [algorithm, genetic]
                     this.finish_num = 0;
                     this.process_result = [];
                     this.curr_individual_num = 0;
+
+                    this.fitness_min = this.step_num * -5;
+                    this.fitness_abs_sum = 0;
+
                     this.event = {
                         finish : null
                     };
@@ -562,7 +588,7 @@ tags : [algorithm, genetic]
                             if (self.curr_individual_num < self.collection.length) {
                                 //console.log('父代',self.parent_generation_id, '种群', self.population_id, '当前个体：' , self.curr_individual_num );
                                 var process = new Process(self.curr_individual_num, self.collection[self.curr_individual_num],
-                                        self.parent_generation_id, self.population_id, self.situationMap);
+                                        self.parent_generation_id, self.population_id, self.situationMap, self.task_num, self.step_num);
                                 process.start(function(id, fitness, run_time) {
                                     //console.log('父代',self.parent_generation_id, '种群',
                                     //        self.population_id, '当前个体：' , id, 'fitness_avg', fitness);
@@ -572,10 +598,12 @@ tags : [algorithm, genetic]
                             } else {
                                 $interval.cancel(timer);
                             }
-                        }, 100);
+                        }, 300);
                     },
                     emit : function(id, fitness, run_time) {
-                        this.process_result.push({id : id, fitness: fitness});
+                        var fitness_abs = fitness - this.fitness_min;
+                        this.fitness_abs_sum += fitness_abs;
+                        this.process_result.push({id : id, fitness : fitness, fitness_abs : fitness_abs});
                         this.finish_num++;
                         if (this.finish_num == this.collection.length) {
                             var parents = this.choiceParents();
@@ -583,33 +611,59 @@ tags : [algorithm, genetic]
                         }
                     },
                     choiceParents : function() {
-                        var descSort = function(a, b) {
-                            //console.log(a.fitness, b.fitness);
-                            return a.fitness < b.fitness ? 1 : -1;
-                        };
-                        this.process_result.sort(descSort);
-                        return this.process_result.slice(0, 2);
+                        var parents = [];
+/*                        this.process_result.sort(function(a, b) {
+                            return a.fitness < b.fitness ? -1 : 1;
+                        });*/
+                        parents.push(this.probabilityChoice(this.process_result));
+                        //console.log('第一个', parents[0]);
+
+                        //console.log('第二个');
+                        //console.log('fitness_abs_sum', this.fitness_abs_sum);
+                        this.fitness_abs_sum -= parents[0].fitness_abs;
+                        //console.log('new fitness_abs_sum', this.fitness_abs_sum);
+                        //var process_list = angular.copy(this.process_result);
+                        //process_list.splice(parents[0].id, 1);
+                        //console.log('process_list', process_list);
+                        console.log('parents[0].id', parents[0].id);
+                        parents.push(this.probabilityChoice(this.process_result, parents[0].id));
+                        return parents;
+                    },
+                    probabilityChoice : function(process_result, exclude_id) {
+                        var rand = Math.random();
+                        //console.log(rand);
+                        //console.log(process_result);
+                        var probability_sum = 0;
+                        for (var i = 0, len = process_result.length; i < len; i++) {
+                            if (i == exclude_id) {
+                                console.log('跳过'+i);
+                                continue;
+                            }
+                            var probability = process_result[i].fitness_abs / this.fitness_abs_sum;
+                            probability_sum += probability;
+                            //console.log('probability', probability, probability_sum);
+                            if (rand < probability_sum) {
+                                //console.log('命中', process_result[i]);
+                                process_result[i].probability = probability * 100;
+                                return process_result[i];
+                            }
+                        }
                     },
                     inherit : function(parents) {
                         var r = randomInt(0, 1),
                                 father = this.collection[parents[r].id],
                                 mother = this.collection[parents[r===1 ? 0 : 1].id],
                                 gene_length = 243;
-                        //console.log('遗传', father, parents[0].fitness, mother, parents[1].fitness);
                         var n = randomInt(gene_length / 3, gene_length / 3 * 2);
-                        //console.log(n, father.getGene().slice(0, n), mother.getGene().slice(n, gene_length));
                         //繁衍后代
-                            var newGene = father.getGene().slice(0, n).concat(mother.getGene().slice(n));
-                        //console.log(newGene);
+                        var newGene = father.getGene().slice(0, n).concat(mother.getGene().slice(n));
                         //基因变异
                         var variation = randomInt(0, gene_length-1);
-                        //console.log(variation, newGene[variation]);
                         newGene[variation] = randomInt(0, 6);
-                        //console.log('curr:' + newGene[variation]);
                         if (this.event.finish) {
                             this.event.finish(this.population_id, new Robey(newGene), {
-                                father : { fitness : parents[r].fitness },
-                                mother : { fitness : parents[r===1 ? 0 : 1].fitness }
+                                father : { fitness : parents[r].fitness, probability : parents[r].probability },
+                                mother : { fitness : parents[r===1 ? 0 : 1].fitness, probability : parents[r===1 ? 0 : 1].probability }
                             });
                         }
                     }
@@ -628,7 +682,7 @@ tags : [algorithm, genetic]
                     this.childrens = [];
                     this.curr_population_num = 0;
                     this.status = 0;
-                    this.interval = this.population_num * 100;
+                    this.interval = this.population_num * 150;
                     this.event = {
                         newBabyBirth : null,
                         finish : null,
@@ -708,8 +762,8 @@ tags : [algorithm, genetic]
                     current_generation : 0,
                     generation_num : 100, //繁衍多少代
                     individual_num : 100, //每一代个体数量
-                    task_num : 200,  //获取平均适应度要执行多少次任务
-                    step_num : 200, //每一次任务要走多少步
+                    task_num : 100,  //获取平均适应度要执行多少次任务
+                    step_num : 100, //每一次任务要走多少步
 
                     birth_individual_amount : 0, //当前诞生个体总数（用于计算进度）
 
@@ -843,8 +897,8 @@ tags : [algorithm, genetic]
                 $scope.config = {
                     generation_num : 100, //繁衍多少代
                     individual_num : 30,  //每一代个体数量
-                    task_num : 200,  //获取平均适应度要执行多少次任务
-                    ipt_step_num : 200 //每一次任务要走多少步
+                    task_num : 100,  //获取平均适应度要执行多少次任务
+                    step_num : 100 //每一次任务要走多少步
                 };
                 $scope.rateOfProgress = 0; //完成进度
                 $scope.mainLogInfo = [];
@@ -866,7 +920,8 @@ tags : [algorithm, genetic]
                     onNewBabyBirth : function(gid, robey_id, robey, parents_info) {
                         $scope.rateOfProgress = Math.round(this.birth_individual_amount / (((this.generation_num - 1) * this.individual_num + 1)) * 100);
                         $scope.detailLogInfo.push('诞生第' + (gid + 1) + '代新个体(ID：' + robey_id + '), 父母适应度：'
-                                + parents_info.father.fitness + '，' + parents_info.mother.fitness);
+                                + parents_info.father.fitness + '(' + Math.round(parents_info.father.probability * 100) / 100 + '%)，'
+                                + parents_info.mother.fitness + '(' + Math.round(parents_info.mother.probability * 100) / 100 + '%)');
                     },
                     onGenerationFinish : function(gid, childrens, parents_info) {
                         $scope.mainLogInfo.push('第' + gid + '代繁衍完成， 下一代平均适应度：' + parents_info.fitness);
@@ -900,8 +955,7 @@ tags : [algorithm, genetic]
                     Evolution.stop();
                 };
 
-
-                $scope.gene = '5,0,3,4,6,0,6,4,4,0,5,6,5,2,1,3,5,1,4,3,2,1,5,1,4,1,0,0,5,5,6,4,2,4,0,2,3,3,0,2,2,1,3,3,3,3,0,0,2,3,2,5,2,1,1,1,6,3,1,4,6,1,0,4,6,5,4,1,2,3,0,4,2,6,0,1,5,5,0,3,2,6,5,1,2,5,5,2,1,3,3,0,0,0,3,5,2,3,4,5,3,4,4,0,5,4,2,6,5,6,2,2,1,1,1,3,5,5,5,3,4,1,2,1,6,4,2,3,0,5,0,6,3,1,0,1,1,1,1,3,6,2,0,3,1,4,1,6,2,0,6,3,6,4,1,6,1,0,4,4,4,1,5,5,0,2,4,6,2,1,3,4,2,5,2,2,0,2,3,2,6,6,2,1,5,4,1,2,1,3,0,3,2,1,6,5,0,1,6,1,5,0,0,0,3,3,5,3,4,5,3,3,1,3,5,0,3,0,1,0,3,6,0,1,5,5,1,1,2,2,4,0,5,2,6,4,3,6,0,3,4,2,4';
+                $scope.gene = '6,4,4,3,6,4,4,5,5,5,3,5,5,5,2,4,0,2,6,2,5,5,2,5,5,5,3,0,2,1,6,6,1,4,3,5,5,0,0,5,4,6,2,5,6,6,4,3,3,6,3,6,6,1,3,4,5,1,6,1,6,5,6,4,6,0,1,2,6,5,5,4,3,0,2,2,3,6,5,5,6,6,5,1,4,4,5,2,0,4,4,4,5,2,3,0,6,0,6,2,4,0,4,3,2,5,0,4,6,1,2,5,4,1,0,2,2,3,1,3,6,2,1,1,4,4,3,2,0,3,6,5,0,2,0,4,5,1,4,5,5,6,2,4,5,5,6,5,0,3,3,6,2,2,3,4,4,4,5,4,6,1,1,1,0,6,1,2,3,0,4,1,2,6,1,1,1,4,5,0,2,2,5,2,0,6,5,4,1,1,5,4,4,0,0,6,6,4,1,5,4,5,2,0,6,1,0,1,2,3,3,6,4,0,5,3,5,0,4,2,4,5,0,6,2,6,4,4,1,2,6,0,1,0,3,1,3,2,4,1,5,4,3';
                 $scope.world = new World();
                 $scope.position = { x:0, y:0 };
                 $scope.fitness = 0;
@@ -909,7 +963,7 @@ tags : [algorithm, genetic]
                 $scope.situationMap = Situation.make();
                 $scope.robey = new Robey($scope.gene.split(','));
                 $scope.performTask = function() {
-                    var task = new Task(0, 0,  $scope.robey,  $scope.situationMap, $scope.world);
+                    var task = new Task(0, 0,  $scope.robey,  $scope.situationMap, 200, $scope.world);
                     var timer = $interval(function() {
                         if ($scope.step < 200) {
                             var r = task.next();
@@ -920,6 +974,7 @@ tags : [algorithm, genetic]
                             //console.log(fitness);
                             $scope.step++;
                         } else {
+
                             $interval.cancel(timer);
                         }
                     }, 1000);
