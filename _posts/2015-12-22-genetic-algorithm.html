@@ -237,7 +237,7 @@ tags : [algorithm, genetic]
                 </ul>
             </div>
             <h4>进度细节 <small>（适应度后面跟着的是被选中的概率）</small></h4>
-            <div style="height: 500px; overflow-x: hidden; overflow-y: auto;
+            <div style="height: 620px; overflow-x: hidden; overflow-y: auto;
             border: 1px solid #999; border-radius : 0.5em;">
                 <ul style="margin-top: 5px;">
                     <li ng-repeat="log in detailLogInfo track by $index">
@@ -260,8 +260,11 @@ tags : [algorithm, genetic]
             </div>
 
             <h4>最终进化基因</h4>
-            <div style="height: 300px; border: 1px solid #999; border-radius : 0.5em;">
-                <p style="word-break: break-all; word-wrap: break-word; margin:10px;" ng-bind="finalRobeyGene"></p>
+            <div style="height: 200px; border: 1px solid #999; border-radius : 0.5em;">
+                <p style="word-break: break-all; word-wrap: break-word; margin:10px;" ng-bind="finalRobeyGene1"></p>
+            </div>
+            <div style="height: 200px; border: 1px solid #999; border-radius : 0.5em; margin-top: 20px;">
+                <p style="word-break: break-all; word-wrap: break-word; margin:10px;" ng-bind="finalRobeyGene2"></p>
             </div>
         </div>
 
@@ -1027,9 +1030,11 @@ tags : [algorithm, genetic]
                         $scope.lastPopulation.generation_id = gid;
                         $scope.lastPopulation.robey_list = childrens;
                     },
-                    onFinish : function(gid, robey_id, robey, parents_info) {
+                    onFinish : function(gid, childrens, parents_info) {
                         $scope.rateOfProgress = 100;
-                        $scope.finalRobeyGene = robey.getGene();
+                        console.log(childrens);
+                        $scope.finalRobeyGene1 = childrens[0].robey.getGene();
+                        $scope.finalRobeyGene2 = childrens[1].robey.getGene();
                         $scope.mainLogInfo.push('进化完成，适应度：父 '
                                 + parents_info.father.fitness + '，母 ' + parents_info.mother.fitness);
                         //console.log('进化完成', robey);
