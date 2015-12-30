@@ -875,7 +875,7 @@ tags : [algorithm, genetic]
                             this.event.newBabyBirth(childrens, parents_info);
                         }
                         if (this.childrens.length == this.population_num) {
-                            this.parent_fitness_avg = Math.round(this.parent_fitness_sum / this.population_num / 2);
+                            this.parent_fitness_avg = Math.round(this.parent_fitness_sum / this.population_num);
                             if (this.event.finish) {
                                 this.event.finish(this.childrens, {
                                     fitness : this.parent_fitness_avg
