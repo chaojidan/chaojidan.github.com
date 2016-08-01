@@ -35,6 +35,7 @@ tags : [swoole,php]
     <p>客户端伪代码</p>
 </section>
 {% highlight php %}
+<?php
 $clients = array();
 $count = Ko_Tool_Singleton::OInstance('KHotel_Youyu_curHotelInquirySet')->getCount();
 for ($i = 0; $i < $count; $i += 10) {
@@ -90,10 +91,12 @@ for ($i = 0; $i < $count; $i += 10) {
 		}
 	}
 }
+?>
 {% endhighlight %}
 
 <p>服务器端伪代码</p>
 {% highlight php %}
+<?php
 class Server {
 	public $serv;
 	private $package_eof = "\r\n";
@@ -178,4 +181,5 @@ class Server {
 }
 $server= new Server;
 $server->run();
+?>
 {% endhighlight %}
