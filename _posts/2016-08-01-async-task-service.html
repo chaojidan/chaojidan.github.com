@@ -68,8 +68,7 @@ class hotelLowestPriceAllOta implements \hotel\youyu\swooleTaskInterface {
         $params = $info['params'];
         $low_price = \KHotel_YouYuApi::getLowestPrice($params['hotel_id'], $params['check_in'],
         $params['check_out'], $params['ota_id']);
-        echo "onTask  \tfd:{$info['fd']}\tfrom_id:$from_id\ttask_id:$task_id\t"
-        . "\ttask_count:{$info['task_count']}\n";
+        echo "onTask  \t fd:{$info['fd']}\t from_id:$from_id\t task_id:$task_id\t task_count:{$info['task_count']}\n";
         return $low_price;
     }
 
@@ -283,7 +282,7 @@ class KHotel_Youyu_swooleClient extends swoole_client {
 <section>
     <h3>目前的不足</h3>
     <ol>
-        <li>1.每一个task任务获取的数据都是保存在内存中，如果数据量很大的话，可能造成内存溢出，应该考虑把存储这块抽象出来，可以保存在临时表中或其他什么地方</li>
-        <li>2.缺少进程管理模块监控服务健康状况</li>
+        <li>每一个task任务获取的数据都是保存在内存中，如果数据量很大的话，可能造成内存溢出，应该考虑把存储这块抽象出来，可以保存在临时表中或其他什么地方</li>
+        <li>缺少进程管理模块监控服务健康状况</li>
     </ol>
 </section>
