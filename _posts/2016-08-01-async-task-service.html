@@ -68,7 +68,7 @@ class hotelLowestPriceAllOta implements \hotel\youyu\swooleTaskInterface {
         $params = $info['params'];
         $low_price = \KHotel_YouYuApi::getLowestPrice($params['hotel_id'], $params['check_in'],
         $params['check_out'], $params['ota_id']);
-        echo "onTask  \t fd:{$info['fd']}\t from_id:$from_id\t task_id:$task_id\t task_count:{$info['task_count']}\n";
+        //echo "onTask  \t fd:{$info['fd']}\t from_id:$from_id\t task_id:$task_id\t task_count:{$info['task_count']}\n";
         return $low_price;
     }
 
@@ -142,8 +142,8 @@ class Server
     function onTaskFinish($serv, $task_id, $info) {
         $key = $info['fd'] . '_' . $info['from_id'];
         $this->data[$key][$task_id] = $info['data'];
-        echo "onFinish\tfd:{$info['fd']}\tfrom_id:{$info['from_id']}\t"
-        . "task_id:$task_id\ttask_count:" . count($this->data[$key]) . "-{$info['task_count']}\n";
+        //echo "onFinish\tfd:{$info['fd']}\tfrom_id:{$info['from_id']}\t"
+        //. "task_id:$task_id\ttask_count:" . count($this->data[$key]) . "-{$info['task_count']}\n";
         if (count($this->data[$key]) == $info['task_count']) {
             $return = $info['class_name']::workFinish($info['params'], $this->data[$key]);
             $serv->send($info['fd'], json_encode($return) . $this->package_eof);
