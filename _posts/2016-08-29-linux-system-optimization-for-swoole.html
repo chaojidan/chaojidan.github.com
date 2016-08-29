@@ -100,28 +100,3 @@ tags : [linux,swoole,php]
 
 
 </section>
-
-<section>
-    <h3>实现接口</h3>
-
-    <p>如果想使用此服务，只需实现一个interface的三个方法，这个interface是：hotel\youyu\swooleTaskInterface</p>
-
-    <p>接口定义：</p>
-
-    {% highlight php %}
-    <?php
-namespace hotel\youyu;
-interface swooleTaskInterface {
-    //获取所有子任务的参数
-    public static function getAllTaskParams($params);
-
-    //执行子任务，返回子任务执行结果
-    public static function task($task_id, $from_id, $params);
-
-    //所有子任务执行完毕后的回调方法，数据返回给客户端
-    public static function workFinish($params, $work_data);
-}
-?>
-    {% endhighlight %}
-
-</section>
