@@ -1,0 +1,127 @@
+---
+layout: post
+title: 针对swoole的linxu系统参数调优
+category : linux
+tagline: ""
+tags : [linux,swoole,php]
+---
+{% include JB/setup %}
+<section>
+    <p>最近swoole服务总是不稳定，平均没过48小时就会停止响应，表现为进程并没有终止，但服务器端就是不能响应，我设想了一些可能的原因：</p>
+    <ul>
+        <li>程序存在内存泄漏</li>
+        <li>worker进程或者taskWorker进程队列堆积</li>
+        <li>程序执行时遇到致命错误</li>
+        <li>系统设置存在问题</li>
+    </ul>
+    <p>通过对进程和内存的仔细观察，基本排除了内存泄漏的可能。目前swoole服务每天处理100多万个请求，260万的taskWorker，我感觉这个量算不上特别大，也修改过worker进程或taskWorker进程数量，问题依旧，所以我觉得也不是第二个原因造成的。</p>
+    <p>目前，我使用公司的mes系统对服务进行实时监控，主要是监测某一项任务中执行时间大于等于5秒的任务占全部任务的比例，正常值应在0.5%以下，超过这个数值会给我发短信报警，目前只能通过重启服务来解决</p>
+    <p>今天依据swoole官网的文档，对服务器的系统参数进行了调优，准备观察一下看看，如果问题不再出现就说明是参数设置的问题，另外我还会想一些办法对异常错误进行捕获。</p>
+    <p>以下是一些常用命令及系统调优方法</p>
+    <h3>1.查看内存占用的命令</h3>
+    {% highlight %}
+    ps -e -o 'pid,comm,args,pcpu,rsz,vsz,stime,user,uid' | grep swoole |  sort -nrk5
+
+    watch -n 1 'ps aux --sort -pmem, -pcpu |grep swoole| head 20'
+
+    free -m
+
+    lsof | grep swoole
+    {% endhighlight %}
+
+    <h3>2.修改ulimit</h3>
+
+    （a）
+    {% highlight %}
+    ulimit -n 262140
+    {% endhighlight %}
+    说明：Linux操作系统对一个进程打开的文件句柄数量的限制(也包含打开的SOCKET数量)。
+    查看
+    ulimit -n
+
+    （b）
+    {% highlight %}
+    ulimit -c unlimited
+    {% endhighlight %}
+    说明：可以产生coredump且不受大小限制
+    查看：
+    {% highlight %}
+    ulimit -c
+    {% endhighlight %}
+
+    查看全部配置
+    {% highlight %}
+    ulimit -a
+    {% endhighlight %}
+
+    （c）设置 /etc/security/limits.conf
+    加入：
+    {% highlight %}
+    * soft nofile 262140
+    * hard nofile 262140
+    root soft nofile 262140
+    root hard nofile 262140
+
+    * soft core unlimited
+    * hard core unlimited
+    root soft core unlimited
+    root hard core unlimited
+    {% endhighlight %}
+
+    <h3>3.修改 /etc/sysctl.conf</h3>
+
+    加入：
+    {% highlight %}
+    net.unix.max_dgram_qlen = 100
+    net.core.wmem_default = 8388608
+    net.core.rmem_default = 8388608
+    net.core.rmem_max = 16777216
+    net.core.wmem_max = 16777216
+    kernel.core_pattern = /mfw_project/run_data/core_files/core-%e-%p-%t
+    {% endhighlight %}
+
+    说明：
+    max_dgram_qlen ： 最大数据报个数
+    swoole使用unix socket dgram来做进程间通信，如果请求量很大，需要调整此参数。系统默认为10，可以设置为100或者更大。
+    或者增加worker进程的数量，减少单个worker进程分配的请求量。
+    wmem_max ： 最大的TCP数据发送缓冲
+    rmen_max : 最大的TCP数据接收缓冲
+    kernel.core_pattern : 开启CoreDump,一旦程序发生异常，会将进程导出到文件。对于调查程序问题有很大的帮助, 必须先确认 ulimit -c 不为零
+
+    使生效：
+    {% highlight %}
+    sysctl -p
+    {% endhighlight %}
+
+    查看：
+    {% highlight %}
+    sysctl -a | grep max_dgram_qlen
+    {% endhighlight %}
+
+
+</section>
+
+<section>
+    <h3>实现接口</h3>
+
+    <p>如果想使用此服务，只需实现一个interface的三个方法，这个interface是：hotel\youyu\swooleTaskInterface</p>
+
+    <p>接口定义：</p>
+
+    {% highlight php %}
+    <?php
+namespace hotel\youyu;
+interface swooleTaskInterface {
+    //获取所有子任务的参数
+    public static function getAllTaskParams($params);
+
+    //执行子任务，返回子任务执行结果
+    public static function task($task_id, $from_id, $params);
+
+    //所有子任务执行完毕后的回调方法，数据返回给客户端
+    public static function workFinish($params, $work_data);
+}
+?>
+    {% endhighlight %}
+
+</section>
