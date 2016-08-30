@@ -127,7 +127,7 @@ section {
     'WenQuanYi Micro Hei', sans-serif;
 }
 
-ul li {
+p, div, ul li {
     font-size: 1.2em;
     font-family:  ff-tisa-web-pro-1, ff-tisa-web-pro-2, 'Lucida Grande', 'Helvetica Neue',
     Helvetica, Arial, 'Hiragino Sans GB', 'Hiragino Sans GB W3', 'Microsoft YaHei UI', 'Microsoft YaHei',
