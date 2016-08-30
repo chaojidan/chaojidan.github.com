@@ -91,8 +91,9 @@ tags : [linux,swoole,php]
 
     <p>说明：</p>
     <ul>
-    <li>max_dgram_qlen ： 最大数据报个数</li>
-    <li>swoole使用unix socket dgram来做进程间通信，如果请求量很大，需要调整此参数。系统默认为10，可以设置为100或者更大。</li>
+    <li><p>max_dgram_qlen ： 最大数据报个数</p>
+        <p>swoole使用unix socket dgram来做进程间通信，如果请求量很大，需要调整此参数。系统默认为10，可以设置为100或者更大。</p>
+    </li>
     <li>或者增加worker进程的数量，减少单个worker进程分配的请求量。</li>
     <li>wmem_max ： 最大的TCP数据发送缓冲</li>
     <li>rmen_max : 最大的TCP数据接收缓冲</li>
