@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>山哥的口算练习题v2.0</title>
+    <style>
+        @page { size: landscape; }
+        .container{
+            width: 100%;
+            display: flex;
+            font-size: 18px;
+        }
+        .headContainer {
+            height: 20px;
+            line-height: 20px;
+            font-size: 14px;
+            /*vertical-align: middle;*/
+            /*margin: 0 auto;*/
+        }
+        .btn {
+            width:120px;
+            height:50px;
+            font-size: 20px;
+            border:1px solid;
+            margin: 20px 0;
+        }
+        .itemContainer {
+            /*height: 500px;*/
+            width: 100%;
+        }
+        .childDiv{
+            flex:1;
+        }
+        .questionBox {
+            visibility: hidden;
+        }
+        .fillIpt {
+            width:60px; font-size: 18px; height: 22px;
+            border-width: 0 0 1px 0;
+
+        }
+        .centerInput .fillIpt {
+            text-align: center;
+        }
+        .chkResult {
+            display: inline-block;
+            margin-left: 10px;
+        }
+        .red {
+            color:red;
+        }
+        .green {
+            color:green;
+        }
+        .darkorange {
+            color:darkorange;
+        }
+        .header {
+            font-size: 24px;
+            text-align: center;
+            margin: 20px;
+            font-family: KaiTi;
+        }
+        .container input[type='number']::-webkit-outer-spin-button,
+        .container input[type='number']::-webkit-inner-spin-button{
+            -webkit-appearance: none !important;
+            margin: 0;
+        }
+        #score {
+            font-size: 24px;
+            color: red;
+        }
+        .optBox {
+            width:200px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">★ 我会算 -- 争当口算小能手 ★</div>
+    <div class="container headContainer">
+        <div class="childDiv">班级：</div>
+        <div class="childDiv">姓名：</div>
+        <div class="childDiv">我的好成绩：<span id="score"></span></div>
+        <div class="childDiv">用时：<span id="spendTime"></span></div>
+    </div>
+    <hr>
+    <div class="container">
+        <div class="container itemContainer" id="container"></div>
+        <div class="optBox">
+            <div>剩余时间：<span id="remainTime"></span></div>
+            <input type="button" value="开始答题" class="btn" id="startBtn">
+
+            <input type="button" value="交卷" class="btn" id="finishBtn">
+
+            <input type="button" value="打印试卷" class="btn" id="printPaperBtn">
+
+            <!--<input type="button" value="设置" class="btn">-->
+        </div>
+    </div>
+
+</body>
+<script>
+
+    window.onload = function () {
+        var oExamCtrl = new ExamController(600);
+        oExamCtrl.init();
+    };
+
+    function ExamController(totalTime) {
+        this.status = 1;
+        this.totalTime = totalTime;
+        this.view = null;
+        this.model = null
+    }
+
+    ExamController.prototype = {
+        init: function () {
+            var self = this;
+            this.model = new Exam();
+            this.model.init();
+            this.view = new ExamView(this.model);
+            this.view.render();
+            document.getElementById("startBtn").onclick = function (ev) {
+                switch (self.status) {
+                    case 1:
+                        self.start();
+                        break;
+                    case 2:
+                        //会导致倒计时阻塞
+                        //alert('测试正在进行中，要重新开始测试请先点"交卷"');
+                        break;
+                    case 3:
+                        if (confirm("是否要重新开始测试？")) {
+                            self.restart();
+                        }
+                        break;
+                }
+            };
+            document.getElementById("finishBtn").onclick = function (ev) {
+                self.end();
+            };
+            document.getElementById("printPaperBtn").onclick = function (ev) {
+                self.printPaper();
+            };
+        },
+        restart: function () {
+            this.model = new Exam();
+            this.model.init();
+            this.view = new ExamView(this.model);
+            this.view.render();
+            this.start();
+        },
+        start: function () {
+            this.status = 2;
+            this.view.start();
+            this.countDown(this.totalTime);
+        },
+        end: function () {
+            if (this.status === 1) {
+                alert("请先开始答题");
+                return;
+            }
+            this.status = 3;
+            var userAnswer = this.getUserAnswer();
+            this.view.showScore(userAnswer);
+        },
+        getUserAnswer: function () {
+            var userAnswerList = [];
+            for (var id in this.model.questions) {
+                console.log(id);
+                var dom = document.getElementById("questionInput_" + id);
+                userAnswerList[id] = dom.value.replace(/(^\s*)|(\s*$)/g, "");
+            }
+            return userAnswerList;
+        },
+        countDown: function (second) {
+            this.view.updateCountDown(second);
+            if (second > 0 && this.status === 2) {
+                second--;
+                var self = this;
+                setTimeout(function() {
+                    self.countDown(second)
+                }, 1000);
+            } else {
+                this.view.updateSpendTime(this.totalTime - second);
+                this.end();
+            }
+        },
+        printPaper: function () {
+            this.view.printMode();
+            window.print();
+            this.view.examMode();
+        }
+    };
+
+    function ExamView(oExam) {
+        this.colNum = 4;
+        this.model = oExam;
+    }
+    
+    ExamView.prototype = {
+        start: function () {
+            var containers = document.querySelectorAll('.questionBox');
+            for (var i = 0; i < containers.length; i++) {
+                containers[i].style.visibility = 'visible';
+            }
+            var ipts = document.querySelectorAll('.fillIpt');
+            for (var i=0; i<ipts.length; i++) {
+                ipts[i].disabled = false;
+            }
+            ipts[0].focus();
+        },
+        printMode: function () {
+            var box = document.querySelector('.optBox');
+            box.style.display = 'none';
+            var items = document.querySelectorAll('.fillIpt');
+            for (var i = 0; i < items.length; i++) {
+                items[i].style.display = 'none';
+            }
+            var items2 = document.querySelectorAll('.chkResult');
+            for (i = 0; i < items2.length; i++) {
+                items2[i].style.display = 'none';
+            }
+            var containers = document.querySelectorAll('.questionBox');
+            for (i = 0; i < containers.length; i++) {
+                containers[i].style.visibility = 'visible';
+            }
+            this.clearScore();
+            this.updateSpendTime('');
+        },
+        examMode: function () {
+            var box = document.querySelector('.optBox');
+            box.style.display = '';
+            var items = document.querySelectorAll('.fillIpt');
+            for (var i = 0; i < items.length; i++) {
+                items[i].style.display = '';
+            }
+            var items2 = document.querySelectorAll('.chkResult');
+            for (i = 0; i < items2.length; i++) {
+                items2[i].style.display = '';
+            }
+        },
+        showScore: function (userAnswer) {
+            var scorePerItem = Math.round(100 / userAnswer.length * 10) / 10;
+            var score = 0;
+            for (var id in userAnswer) {
+                if (userAnswer[id] === '') {
+                    document.getElementById("chkResult_" + id).innerHTML = '<span class="darkorange">没做</span>';
+                } else {
+                    userAnswer[id] = parseInt(userAnswer[id]);
+                    if (this.model.questions[id].answer === userAnswer[id]) {
+                        score += scorePerItem;
+                        document.getElementById("chkResult_" + id).innerHTML = '<span class="green">对</span>';
+                    } else {
+                        document.getElementById("chkResult_" + id).innerHTML = '<span class="red">错</span>';
+                    }
+                }
+            }
+            document.getElementById("score").innerText = score + '';
+        },
+        clearScore: function () {
+            document.getElementById("score").innerText = '';
+        },
+        updateSpendTime: function (spendTime) {
+            if (spendTime === '') {
+                document.getElementById("spendTime").innerText = '';
+            } else {
+                document.getElementById("spendTime").innerText = spendTime + '秒';
+            }
+        },
+        updateCountDown: function (second) {
+            if (second > 60) {
+                showTime = Math.ceil(second / 60) + '分种';
+            } else {
+                showTime = second + '秒';
+            }
+            document.getElementById("remainTime").innerText = showTime;
+        },
+        render: function () {
+            var max = this.model.maxL > this.model.maxR ? this.model.maxL : this.model.maxR;
+            var min = this.model.minL < this.model.minR ? this.model.minL : this.model.minR;
+            var qCntPerCol = Math.ceil(this.model.questions.length / this.colNum);
+            var html = '';
+            var counter = 0;
+            for (var col = 0; col < this.colNum; col++) {
+                html += '<div class="childDiv questionBox">';
+                var questions = this.model.questions.slice(col * qCntPerCol, col * qCntPerCol + qCntPerCol);
+                for (var key in questions) {
+                    var inputHtml = '<input type="number" value="" id="questionInput_' + counter + '" class="fillIpt" max="' + max + '" min="' + min + '">';
+                    var itemHtml = '<div>';
+                    for (var i in questions[key]['leftArray']) {
+                        var qItem = questions[key]['leftArray'][i];
+                        if (qItem.type === 'answer') {
+                            itemHtml += '<span class="centerInput">(' + inputHtml + ')</span>';
+                        } else {
+                            itemHtml += '<span>' + qItem.value + '</span>';
+                        }
+                    }
+                    itemHtml += ' = ';
+                    if (questions[key]['rightValue'].type !== 'answer') {
+                        itemHtml += questions[key]['rightValue'].value;
+                    } else {
+                        itemHtml += inputHtml;
+                    }
+                    itemHtml += '<span id="chkResult_' + counter + '" class="chkResult"></span>';
+                    itemHtml += '</div>';
+                    html += itemHtml;
+                    counter++;
+                }
+                html += '</div>';
+            }
+            document.getElementById("container").innerHTML = html;
+            this.clearScore();
+        }
+    };
+    
+    function Exam() {
+        this.maxR = 20;
+        this.maxL = 20;
+        this.minR = 0;
+        this.minL = 1;
+        this.DB = null;
+        this.questions = [];
+        this.qTtypeNum = {
+            '2' : {
+                'r':  90,  //两个数运算，答案在等号右侧
+                'l': {
+                    1: 5,  //两个数运算，答案在等号左侧第一个数
+                    2: 5   //两个数运算，答案在等号左侧第二个数
+                }
+            },
+            '3' : {
+                'r' :  0    //三个数运算，答案在等号右侧
+            }
+        };
+    }
+
+    Exam.prototype = {
+        init: function () {
+            var oDB = new QuestionDB();
+            var oFilterAdd = new FilterRule();
+            oFilterAdd.addRule('result_max_value', this.maxR);
+            oDB.appendDB('+', this.minL, this.maxL, oFilterAdd);
+
+            var oFilterSub = new FilterRule();
+            oFilterSub.addRule('result_min_value', this.minR);
+            oFilterSub.addRule('need_borrow', false);
+            oDB.appendDB('-', this.minL, this.maxL, oFilterSub);
+
+            oDB.shuffle();
+
+            this.DB = oDB;
+            this.makeQuestions();
+            //console.log(this.questions);
+        },
+        makeQuestions: function () {
+            var counter = 0;
+            //一共几个数运算
+            for (var type in this.qTtypeNum) {
+                //答案在等号左还是右
+                for (var subType in this.qTtypeNum[type]) {
+                    if ( this.qTtypeNum[type].hasOwnProperty(subType)) {
+                        var typeNum, item;
+                        if (subType === 'r') {
+                            typeNum =  this.qTtypeNum[type][subType];
+                            //一共几道题
+                            for (item = 0; item < typeNum; item++) {
+                                this._makeQuestion(counter, type, subType);
+                                counter++;
+                            }
+                        } else if (subType === 'l') {
+                            //答案位置在第几个数
+                            for (var pos in this.qTtypeNum[type][subType]) {
+                                if ( this.qTtypeNum[type][subType].hasOwnProperty(pos)) {
+                                    typeNum =  this.qTtypeNum[type][subType][pos];
+                                    //一共几道题
+                                    for (item = 0; item < typeNum; item++) {
+                                        this._makeQuestion(counter, type, subType, pos);
+                                        counter++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+        },
+        _makeQuestion: function (counter, type, subType, pos) {
+            var seedQuestions = this._findSeedQuestions(type, counter);
+            if (seedQuestions !== false) {
+                var oExamQuestion = new ExamQuestion(counter, seedQuestions);
+                type = parseInt(type);
+                oExamQuestion.make(type, subType, pos);
+                //console.log(oExamQuestion);
+                this.questions.push(oExamQuestion);
+            }
+        },
+        _findSeedQuestions: function (type, counter) {
+            if (type === '2') {
+                return [this.DB.questions[counter]];
+            }
+            return false; //todo
+        }
+    };
+
+    function ExamQuestion(id, seedQuestions) {
+        this.id = id;
+        this.seedQuestions = seedQuestions;
+
+        this.answer = null;
+        this.leftArray = [];
+        this.rightValue = null;
+    }
+
+    ExamQuestion.prototype = {
+        make: function (type, subType, pos) {
+            if (type === 2) {
+                var question = this.seedQuestions[0];
+                if (subType === 'r') {
+                    this.leftArray[0] = new QuestionItem('number', question.num[0]);
+                    this.leftArray[1] = new QuestionItem('operation', question.operation);
+                    this.leftArray[2] = new QuestionItem('number', question.num[1]);
+                    this.rightValue = new QuestionItem('answer', question.result);
+                    this.answer = question.result;
+                } else if (subType === 'l') {
+                    pos = pos - 1;
+                    if (pos === 0) {
+                        this.leftArray[0] = new QuestionItem('answer', question.num[0]);
+                        this.leftArray[2] = new QuestionItem('number', question.num[1]);
+                        this.answer = question.num[0];
+                    } else if (pos === 1) {
+                        this.leftArray[0] = new QuestionItem('number', question.num[0]);
+                        this.leftArray[2] = new QuestionItem('answer', question.num[1]);
+                        this.answer = question.num[1];
+                    }
+                    this.leftArray[1] = new QuestionItem('operation', question.operation);
+                    this.rightValue = new QuestionItem('number', question.result);
+
+                }
+
+            }
+            // var loop = this.type - 1;
+            //
+            // for (var i = 0; i < loop ; i++) {
+            //     if (i = loop - 1) {
+            //
+            //     }
+            // }
+        }    
+    };
+
+    function QuestionItem(type, value) {
+        this.type = type; //
+        this.value = value;
+    }
+
+    function QuestionSeed(num1, num2, operation) {
+        this.num = [];
+        this.num[0] = num1;
+        this.num[1] = num2;
+        this.operation = operation;
+        switch (operation) {
+            case '+':
+                this.result = num1 + num2;
+                break;
+            case '-':
+                this.result = num1 - num2;
+                break;
+            case '*':
+                this.result = num1 * num2;
+                break;
+            case '/':
+                if (num2 !== 0) {
+                    this.result = num1 / num2;
+                } else {
+                    this.result = null;
+                }
+                break;
+        }
+    }
+
+    function QuestionDB() {
+        this.questions = [];
+    }
+
+    QuestionDB.prototype = {
+        add: function (qSeed) {
+            this.questions.push(qSeed);
+        },
+        appendDB: function (operation, min, max, oFilterRule) {
+            for (var i = min; i <= max; i++) {
+                for (var j = min; j <= max; j++) {
+                    var qSeed = new QuestionSeed(i, j, operation);
+                    if (oFilterRule.check(qSeed)) {
+
+                        this.add(qSeed);
+                    }
+                }
+            }
+        },
+        shuffle: function () {
+            this.questions = Util.shuffle(this.questions);
+        },
+        getRange: function (start, end) {
+            return this.questions.slice(start, end);
+        }
+    };
+
+    function FilterRule() {
+        this.rules = [];
+    }
+    FilterRule.prototype = {
+        addRule: function (key, value) {
+            this.rules.push([key, value]);
+        },
+        check: function (qSeed) {
+            for (var i in this.rules) {
+                var rule = this.rules[i];
+                switch (rule[0]) {
+                    case 'result_max_value':
+                        if (!this._ruleResultMaxValue(qSeed, rule[1])) {
+                            return false;
+                        }
+                        break;
+                    case 'result_min_value':
+                        if (!this._ruleResuleMinValue(qSeed, rule[1])) {
+                            return false;
+                        }
+                        break;
+                    case 'need_borrow':
+                        if (!this._ruleNeedBorrow(qSeed, rule[1])) {
+                            return false;
+                        }
+                        break;
+                }
+            }
+            return true;
+        },
+        _ruleResultMaxValue: function (qSeed, value) {
+            return qSeed.result <= value;
+        },
+        _ruleResuleMinValue: function (qSeed, value) {
+            return qSeed.result >= value;
+        },
+        _ruleNeedBorrow: function (qSeed) {
+            if (qSeed.operation == '-' && (qSeed.num[0] > qSeed.num[1]) && qSeed.num[0] > 10) {
+                var arrNum1 = Util.number2Array(qSeed.num[0]);
+                var arrNum2 = Util.number2Array(qSeed.num[1]);
+                for (var i = 0; i < arrNum1.length; i++) {
+                    if (arrNum2[i] && (arrNum1[i] < arrNum2[i])) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+    };
+
+    var Util = {
+        prevSiblingElem: function(elem) {
+            while ((elem = elem.previousSibling)) {
+                if (elem.nodeType === 1) {
+                    return elem;
+                }
+            }
+        },
+
+        nextSiblingElem: function(elem) {
+            while ((elem = elem.nextSibling)) {
+                if (elem.nodeType === 1) {
+                    return elem;
+                }
+            }
+        },
+
+        number2Array: function (num) {
+            var strNum = num + '';
+            var len = strNum.length;
+            var arr = [];
+            for (var i = len - 1 ; i >= 0; i--) {
+                arr.push(parseInt(strNum[i]));
+            }
+            return arr;
+        },
+
+        shuffle: function(a) {
+            var j, x, i;
+            for (i = a.length; i; i--) {
+                j = Math.floor(Math.random() * i);
+                x = a[i - 1];
+                a[i - 1] = a[j];
+                a[j] = x;
+            }
+            return a;
+        }
+    }
+</script>
+</html>
