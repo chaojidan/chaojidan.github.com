@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -8,7 +9,7 @@
         .container{
             width: 100%;
             display: flex;
-            font-size: 18px;
+            font-size: 17px;
         }
         .headContainer {
             height: 20px;
@@ -20,7 +21,7 @@
         .btn {
             width:120px;
             height:50px;
-            font-size: 20px;
+            font-size: 18px;
             border:1px solid;
             margin: 20px 0;
         }
@@ -34,7 +35,11 @@
         .questionBox {
             visibility: hidden;
         }
-        .fillIpt {
+        .headContainer .fillInfo {
+            width:90px; font-size: 16px; height: 20px;
+            border-width: 0 0 1px 0;
+        }
+        .itemContainer .fillIpt {
             width:60px; font-size: 18px; height: 22px;
             border-width: 0 0 1px 0;
 
@@ -58,7 +63,7 @@
         .header {
             font-size: 24px;
             text-align: center;
-            margin: 20px;
+            margin: 15px;
             font-family: KaiTi;
         }
         .container input[type='number']::-webkit-outer-spin-button,
@@ -73,19 +78,69 @@
         .optBox {
             width:200px;
         }
+        #optionContainer {
+            border: 1px solid #666;
+            margin:30px;
+        }
+        #optionContainer input[type=number] {
+            font-size: 20px;
+        }
+        #optionContainer input[type=number] {
+            width: 60px;
+        }
     </style>
 </head>
 <body>
     <div class="header">★ 我会算 -- 争当口算小能手 ★</div>
     <div class="container headContainer">
-        <div class="childDiv">班级：</div>
-        <div class="childDiv">姓名：</div>
+        <div class="childDiv">班级：<input type="text" value="" class="fillInfo"></div>
+        <div class="childDiv">姓名：<input type="text" value="" class="fillInfo"></div>
         <div class="childDiv">我的好成绩：<span id="score"></span></div>
         <div class="childDiv">用时：<span id="spendTime"></span></div>
     </div>
     <hr>
+
+
     <div class="container">
-        <div class="container itemContainer" id="container"></div>
+        <div class="childDiv">
+            <div id="optionContainer" style="display: none;">
+                <div style="margin: 20px">
+
+                    <p>考试时间 : <input type="number" value="" class="fillInfo" id="optExamTime"> 秒</p>
+                    <p>包含的四则运算 ：
+                        <label><input type="checkbox" value="+" name="operation" id="operation_a">加</label>
+                        <label><input type="checkbox" value="-" name="operation" id="operation_s">减</label>
+                        <label><input type="checkbox" value="*" name="operation" id="operation_m">乘</label>
+                        <label><input type="checkbox" value="/" name="operation" id="operation_d">除</label>
+                    </p>
+
+                    <p><label>等号左侧出现的最大数： <input type="number" value="" class="fillInfo" id="optMaxLeft"></label></p>
+                    <p><label>等号左侧出现的最小数： <input type="number" value="" class="fillInfo" id="optMinLeft"></label></p>
+
+                    <p><label>等号右侧出现的最大数： <input type="number" value="" class="fillInfo" id="optMaxRight">（加法和乘法）</label></p>
+                    <p><label>等号右侧出现的最小数： <input type="number" value="" class="fillInfo" id="optMinRight">（减法和除法）</label></p>
+
+                    <p><label>答案在等号右侧的题目数： <input type="number" value="" class="fillInfo" id="opt2RNum"></label></p>
+                    <p><label>等号左侧的第一个数为答案的题目数： <input type="number" value="" class="fillInfo" id="opt2L1Num"></label></p>
+                    <p><label>等号左侧的第二个数为答案的题目数： <input type="number" value="" class="fillInfo" id="opt2L2Num"></label></p>
+
+                    <p>
+                        <label>大于10的减法出现需要借位的题目：
+                            <input type="radio" name="needBorrow" id="needBorrowTrue">是
+                            <input type="radio" name="needBorrow" id="needBorrowFalse">否
+                        </label>
+                    </p>
+
+                    <p><input type="button" value="隐藏设置" class="btn" id="hideOptionBtn"></p>
+
+                </div>
+            </div>
+
+            <div class="container itemContainer" id="container"></div>
+        </div>
+
+
+
         <div class="optBox">
             <div>剩余时间：<span id="remainTime"></span></div>
             <input type="button" value="开始答题" class="btn" id="startBtn">
@@ -94,40 +149,140 @@
 
             <input type="button" value="打印试卷" class="btn" id="printPaperBtn">
 
-            <!--<input type="button" value="设置" class="btn">-->
+            <input type="button" value="设置" class="btn" id="showOptionBtn">
         </div>
+
     </div>
 
 </body>
 <script>
 
     window.onload = function () {
-        var oExamCtrl = new ExamController(600);
+        var oExamCtrl = new ExamController();
         oExamCtrl.init();
     };
 
-    function ExamController(totalTime) {
+    function Option() {
+        this.examTime = 600;
+        this.operations = ['+', '-'];
+        this.maxLeft = 20;
+        this.minLeft = 1;
+        this.maxRight = 20;
+        this.minRight = 0;
+        this.qTypeNum = {
+            '2' : {
+                'r':  90,  //两个数运算，答案在等号右侧
+                'l': {
+                    '1': 5,  //两个数运算，答案在等号左侧第一个数
+                    '2': 5   //两个数运算，答案在等号左侧第二个数
+                }
+            },
+            '3' : {
+                'r' :  0    //三个数运算，答案在等号右侧，暂未实现
+            }
+        };
+        this.needBorrow = false;
+    }
+
+    Option.prototype = {
+        setOptions: function () {
+            this.setExamTime();
+            this.setOperations();
+            this.setNumRange();
+            this.setQuestionTypeNum();
+            this.setNumRange();
+            this.setNeedBorrow();
+        },
+        setOperations: function () {
+            var opDom = document.getElementsByName("operation");
+            this.operations = [];
+            for (var i in opDom) {
+                if (opDom[i].checked === true) {
+                    this.operations.push(opDom[i].value);
+                }
+            }
+            if (this.operations.length <= 0) {
+                alert("必须指定一种四则运算");
+            }
+        },
+        setNumRange: function () {
+            this.maxLeft = parseInt(document.getElementById("optMaxLeft").value);
+            this.minLeft = parseInt(document.getElementById("optMinLeft").value);
+            this.maxRight = parseInt(document.getElementById("optMaxRight").value);
+            this.minRight = parseInt(document.getElementById("optMinRight").value);
+        },
+        setQuestionTypeNum: function () {
+            this.qTypeNum['2']['r'] = parseInt(document.getElementById("opt2RNum").value);
+            this.qTypeNum['2']['l']['1'] = parseInt(document.getElementById("opt2L1Num").value);
+            this.qTypeNum['2']['l']['2'] = parseInt(document.getElementById("opt2L2Num").value);
+            if (this.qTypeNum['2']['r'] + this.qTypeNum['2']['l']['1'] + this.qTypeNum['2']['l']['2'] === 0) {
+                this.qTypeNum['2']['r'] = 100;
+                alert('至少制定两一道题目');
+            }
+        },
+        setNeedBorrow: function () {
+            if (document.getElementById('needBorrowTrue').checked === true) {
+                this.needBorrow = true;
+            } else {
+                this.needBorrow = false;
+            }
+        },
+        setExamTime: function () {
+            this.examTime = document.getElementById("optExamTime").value;
+            if (this.examTime < 1 || this.examTime > 7200) {
+                alert('考试时间超出范围(1-7200)');
+                this.examTime = 600;
+            }
+        }
+    };
+
+    /**
+     * 控制器
+     */
+    function ExamController() {
         this.status = 1;
-        this.totalTime = totalTime;
         this.view = null;
-        this.model = null
+        this.model = null;
+        this.optionChanged = false;
+        this.optionView = null;
+        this.options = null;
     }
 
     ExamController.prototype = {
         init: function () {
             var self = this;
-            this.model = new Exam();
-            this.model.init();
-            this.view = new ExamView(this.model);
-            this.view.render();
+            Node.prototype.delegate = function(eventName, sub, fn) {
+                var _sef = this;
+                this.addEventListener(eventName, function(event) {
+                    var target = event.target || event.srcElement,
+                        list = _sef.querySelectorAll(sub);
+                    if (list && Array.from(list).includes(target)) {
+                        if (typeof fn === 'function') fn.apply(target, arguments);
+                    }
+                }, false);
+            };
+
+            this.options = new Option();
+            this.optionView = new OptionView();
+            this.optionView.setOptions(this.options);
+
+            document.getElementById('optionContainer').delegate('change', 'input', function () {
+                self.optionChanged = true;
+            });
+
+            this._init();
+
             document.getElementById("startBtn").onclick = function (ev) {
+                if (self.optionChanged === true) {
+                    self.options.setOptions();
+                }
                 switch (self.status) {
                     case 1:
-                        self.start();
-                        break;
-                    case 2:
-                        //会导致倒计时阻塞
-                        //alert('测试正在进行中，要重新开始测试请先点"交卷"');
+                        if (self.optionChanged === true) {
+                            self.restart();
+                        } else {
+                            self.start();
+                        }
                         break;
                     case 3:
                         if (confirm("是否要重新开始测试？")) {
@@ -135,25 +290,51 @@
                         }
                         break;
                 }
+                self.optionChanged = false;
             };
+
             document.getElementById("finishBtn").onclick = function (ev) {
                 self.end();
             };
             document.getElementById("printPaperBtn").onclick = function (ev) {
                 self.printPaper();
             };
+            var container = document.getElementById('container');
+            container.delegate('focusout', '.fillIpt', function () {
+                if (self.status === 3) {
+                    var userAnswer = self.getUserAnswer();
+                    self.view.showScore(userAnswer);
+                }
+            });
+            document.getElementById("hideOptionBtn").onclick = function (ev) {
+                self.view.hideOption();
+            };
+            document.getElementById("showOptionBtn").onclick = function (ev) {
+                self.view.showOption();
+            };
+        },
+        _init: function () {
+            if (this.options.operations.length <= 0) {
+                return false;
+            }
+            this.model = new Exam();
+            if (this.model.init(this.options) === true) {
+                this.view = new ExamView(this.model);
+                this.view.render();
+                return true;
+            }
+            alert('可选的试题数少于要生成的试题数，请重新选取更大的数字范围，或者减少一张试卷的试题数。');
+            return false;
         },
         restart: function () {
-            this.model = new Exam();
-            this.model.init();
-            this.view = new ExamView(this.model);
-            this.view.render();
-            this.start();
+            if (this._init() === true) {
+                this.start();
+            }
         },
         start: function () {
             this.status = 2;
             this.view.start();
-            this.countDown(this.totalTime);
+            this.countDown(this.options.examTime);
         },
         end: function () {
             if (this.status === 1) {
@@ -162,12 +343,11 @@
             }
             this.status = 3;
             var userAnswer = this.getUserAnswer();
-            this.view.showScore(userAnswer);
+            this.view.finish(userAnswer);
         },
         getUserAnswer: function () {
             var userAnswerList = [];
             for (var id in this.model.questions) {
-                console.log(id);
                 var dom = document.getElementById("questionInput_" + id);
                 userAnswerList[id] = dom.value.replace(/(^\s*)|(\s*$)/g, "");
             }
@@ -182,7 +362,7 @@
                     self.countDown(second)
                 }, 1000);
             } else {
-                this.view.updateSpendTime(this.totalTime - second);
+                this.view.updateSpendTime(this.options.examTime - second);
                 this.end();
             }
         },
@@ -193,22 +373,70 @@
         }
     };
 
+    function OptionView() {
+
+    }
+
+    OptionView.prototype = {
+        setOptions: function (options) {
+            document.getElementById("optExamTime").value = options.examTime;
+            if (options.operations.indexOf('+') > -1) {
+                document.getElementById("operation_a").checked = true;
+            }
+            if (options.operations.indexOf('-') > -1) {
+                document.getElementById("operation_s").checked = true;
+            }
+            if (options.operations.indexOf('*') > -1) {
+                document.getElementById("operation_m").checked = true;
+            }
+            if (options.operations.indexOf('/') > -1) {
+                document.getElementById("operation_d").checked = true;
+            }
+            document.getElementById("optMaxLeft").value = options.maxLeft;
+            document.getElementById("optMinLeft").value = options.minLeft;
+            document.getElementById("optMaxRight").value = options.maxRight;
+            document.getElementById("optMinRight").value = options.minRight;
+
+            document.getElementById("opt2RNum").value = options.qTypeNum['2']['r'];
+            document.getElementById("opt2L1Num").value = options.qTypeNum['2']['l']['1'];
+            document.getElementById("opt2L2Num").value = options.qTypeNum['2']['l']['2'];
+
+            if (options.needBorrow === true) {
+                document.getElementById("needBorrowTrue").checked = true;
+            } else {
+                document.getElementById("needBorrowFalse").checked = true;
+            }
+        }
+    };
+
+    /**
+     * 视图层
+     * @param oExam
+     * @constructor
+     */
     function ExamView(oExam) {
         this.colNum = 4;
         this.model = oExam;
     }
     
     ExamView.prototype = {
+        showOption: function () {
+            document.getElementById("optionContainer").style.display = '';
+        },
+        hideOption: function () {
+            document.getElementById("optionContainer").style.display = 'none';
+        },
         start: function () {
             var containers = document.querySelectorAll('.questionBox');
             for (var i = 0; i < containers.length; i++) {
                 containers[i].style.visibility = 'visible';
             }
-            var ipts = document.querySelectorAll('.fillIpt');
-            for (var i=0; i<ipts.length; i++) {
-                ipts[i].disabled = false;
-            }
-            ipts[0].focus();
+            document.querySelector('.fillIpt').focus();
+            document.getElementById("startBtn").style.display = 'none';
+            document.getElementById("printPaperBtn").style.display = 'none';
+            document.getElementById("showOptionBtn").style.display = 'none';
+            document.getElementById("finishBtn").style.display = '';
+            this.hideOption();
         },
         printMode: function () {
             var box = document.querySelector('.optBox');
@@ -227,6 +455,7 @@
             }
             this.clearScore();
             this.updateSpendTime('');
+            this.hideOption();
         },
         examMode: function () {
             var box = document.querySelector('.optBox');
@@ -240,23 +469,37 @@
                 items2[i].style.display = '';
             }
         },
+        finish: function (userAnswer) {
+            this.showScore(userAnswer);
+            document.getElementById("startBtn").style.display = '';
+            document.getElementById("printPaperBtn").style.display = '';
+            document.getElementById("showOptionBtn").style.display = '';
+            document.getElementById("finishBtn").style.display = 'none';
+        },
         showScore: function (userAnswer) {
             var scorePerItem = Math.round(100 / userAnswer.length * 10) / 10;
             var score = 0;
+            var errorNum = 0;
             for (var id in userAnswer) {
                 if (userAnswer[id] === '') {
+                    errorNum++;
                     document.getElementById("chkResult_" + id).innerHTML = '<span class="darkorange">没做</span>';
                 } else {
-                    userAnswer[id] = parseInt(userAnswer[id]);
-                    if (this.model.questions[id].answer === userAnswer[id]) {
+                    //userAnswer[id] = parseInt(userAnswer[id]);
+                    if (this.model.questions[id].answer + '' === userAnswer[id]) {
                         score += scorePerItem;
                         document.getElementById("chkResult_" + id).innerHTML = '<span class="green">对</span>';
                     } else {
+                        errorNum++;
                         document.getElementById("chkResult_" + id).innerHTML = '<span class="red">错</span>';
                     }
                 }
             }
-            document.getElementById("score").innerText = score + '';
+            if (errorNum === 0) {
+                document.getElementById("score").innerText = '100';
+            } else {
+                document.getElementById("score").innerText = Math.round(score) + '';
+            }
         },
         clearScore: function () {
             document.getElementById("score").innerText = '';
@@ -269,8 +512,9 @@
             }
         },
         updateCountDown: function (second) {
+            var showTime;
             if (second > 60) {
-                showTime = Math.ceil(second / 60) + '分种';
+                showTime = '<' + Math.ceil(second / 60) + '分种';
             } else {
                 showTime = second + '秒';
             }
@@ -293,7 +537,24 @@
                         if (qItem.type === 'answer') {
                             itemHtml += '<span class="centerInput">(' + inputHtml + ')</span>';
                         } else {
-                            itemHtml += '<span>' + qItem.value + '</span>';
+                            if (qItem.type === 'operation') {
+                                switch (qItem.value) {
+                                    case '+':
+                                        itemHtml += '<span> ➕️ </span>';
+                                        break;
+                                    case '-':
+                                        itemHtml += '<span> ➖️ </span>';
+                                        break;
+                                    case '*':
+                                        itemHtml += '<span> ✖️ </span>';
+                                        break;
+                                    case '/':
+                                        itemHtml += '<span> ➗️ </span>';
+                                        break;
+                                }
+                            } else {
+                                itemHtml += '<span> ' + qItem.value + ' </span>';
+                            }
                         }
                     }
                     itemHtml += ' = ';
@@ -310,59 +571,95 @@
                 html += '</div>';
             }
             document.getElementById("container").innerHTML = html;
+            document.getElementById("finishBtn").style.display = 'none';
             this.clearScore();
         }
     };
-    
+
+    /**
+     * 生成本次考试所有试题
+     * @constructor
+     */
     function Exam() {
-        this.maxR = 20;
-        this.maxL = 20;
-        this.minR = 0;
-        this.minL = 1;
         this.DB = null;
         this.questions = [];
-        this.qTtypeNum = {
+        this.qTypeNum = {
             '2' : {
-                'r':  90,  //两个数运算，答案在等号右侧
+                'r':  0,  //两个数运算，答案在等号右侧
                 'l': {
-                    1: 5,  //两个数运算，答案在等号左侧第一个数
-                    2: 5   //两个数运算，答案在等号左侧第二个数
+                    1: 0,  //两个数运算，答案在等号左侧第一个数
+                    2: 0   //两个数运算，答案在等号左侧第二个数
                 }
-            },
-            '3' : {
-                'r' :  0    //三个数运算，答案在等号右侧
             }
         };
     }
 
     Exam.prototype = {
-        init: function () {
+        init: function (options) {
+            this.qTypeNum = options.qTypeNum;
             var oDB = new QuestionDB();
-            var oFilterAdd = new FilterRule();
-            oFilterAdd.addRule('result_max_value', this.maxR);
-            oDB.appendDB('+', this.minL, this.maxL, oFilterAdd);
+            if (options['operations'].indexOf('+') > -1) {
+                var oFilterAdd = new FilterRule();
+                oFilterAdd.addRule('result_max_value', options.maxRight);
+                oDB.appendDB('+', options.minLeft, options.maxLeft, oFilterAdd);
+            }
 
-            var oFilterSub = new FilterRule();
-            oFilterSub.addRule('result_min_value', this.minR);
-            oFilterSub.addRule('need_borrow', false);
-            oDB.appendDB('-', this.minL, this.maxL, oFilterSub);
+            if (options['operations'].indexOf('-') > -1) {
+                var oFilterSub = new FilterRule();
+                oFilterSub.addRule('result_min_value', options.minRight);
+                oFilterSub.addRule('need_borrow', options.needBorrow);
+                oDB.appendDB('-', options.minLeft, options.maxLeft, oFilterSub);
+            }
+
+            if (options['operations'].indexOf('*') > -1) {
+                var oFilterMulti = new FilterRule();
+                oFilterAdd.addRule('result_max_value', options.maxRight);
+                oDB.appendDB('*', options.minLeft, options.maxLeft, oFilterMulti);
+            }
+
+            if (options['operations'].indexOf('/') > -1) {
+                var oFilterDivi = new FilterRule();
+                oFilterSub.addRule('result_min_value', options.minRight);
+                oDB.appendDB('/', options.minLeft, options.maxLeft, oFilterDivi);
+            }
 
             oDB.shuffle();
 
             this.DB = oDB;
-            this.makeQuestions();
-            //console.log(this.questions);
+
+            var total = this.getQuestionTotal();
+            //console.log(total, oDB.questions.length);
+            if (total < oDB.questions.length) {
+                this.makeQuestions();
+                return true;
+            }
+            return false;
+        },
+        getQuestionTotal: function () {
+            var total = 0;
+            for (var i in this.qTypeNum) {
+                for (var j in this.qTypeNum[i]) {
+                    if (j === 'r') {
+                        total += this.qTypeNum[i][j];
+                    } else if (j === 'l') {
+                        for (var k in this.qTypeNum[i][j]) {
+                            total += this.qTypeNum[i][j][k];
+                        }
+                    }
+                }
+            }
+            return total;
         },
         makeQuestions: function () {
             var counter = 0;
             //一共几个数运算
-            for (var type in this.qTtypeNum) {
+            for (var type in this.qTypeNum) {
                 //答案在等号左还是右
-                for (var subType in this.qTtypeNum[type]) {
-                    if ( this.qTtypeNum[type].hasOwnProperty(subType)) {
+                for (var subType in this.qTypeNum[type]) {
+                    if ( this.qTypeNum[type].hasOwnProperty(subType)) {
                         var typeNum, item;
                         if (subType === 'r') {
-                            typeNum =  this.qTtypeNum[type][subType];
+                            typeNum =  this.qTypeNum[type][subType];
                             //一共几道题
                             for (item = 0; item < typeNum; item++) {
                                 this._makeQuestion(counter, type, subType);
@@ -370,9 +667,9 @@
                             }
                         } else if (subType === 'l') {
                             //答案位置在第几个数
-                            for (var pos in this.qTtypeNum[type][subType]) {
-                                if ( this.qTtypeNum[type][subType].hasOwnProperty(pos)) {
-                                    typeNum =  this.qTtypeNum[type][subType][pos];
+                            for (var pos in this.qTypeNum[type][subType]) {
+                                if ( this.qTypeNum[type][subType].hasOwnProperty(pos)) {
+                                    typeNum =  this.qTypeNum[type][subType][pos];
                                     //一共几道题
                                     for (item = 0; item < typeNum; item++) {
                                         this._makeQuestion(counter, type, subType, pos);
@@ -384,6 +681,13 @@
                     }
                 }
 
+            }
+
+            var shuffleNum = this.qTypeNum["2"]['l']['1'] + this.qTypeNum["2"]['l']['2'];
+            var shuffleQuestions = this.questions.slice(this.qTypeNum["2"]['r'], this.qTypeNum["2"]['r'] + shuffleNum);
+            shuffleQuestions = Util.shuffle(shuffleQuestions);
+            for (var i = 0; i < shuffleNum; i++) {
+                this.questions.splice(this.qTypeNum["2"]['r'] + i, 1, shuffleQuestions[i]);
             }
         },
         _makeQuestion: function (counter, type, subType, pos) {
@@ -404,6 +708,12 @@
         }
     };
 
+    /**
+     * 生成单个考题
+     * @param id
+     * @param seedQuestions
+     * @constructor
+     */
     function ExamQuestion(id, seedQuestions) {
         this.id = id;
         this.seedQuestions = seedQuestions;
@@ -440,6 +750,7 @@
                 }
 
             }
+            //todo
             // var loop = this.type - 1;
             //
             // for (var i = 0; i < loop ; i++) {
@@ -450,11 +761,24 @@
         }    
     };
 
+    /**
+     * 定义一道考题中的一个元素
+     * @param type
+     * @param value
+     * @constructor
+     */
     function QuestionItem(type, value) {
-        this.type = type; //
+        this.type = type; //number,operation,answer
         this.value = value;
     }
 
+    /**
+     * 定义试题种子，两个数的基本运算
+     * @param num1
+     * @param num2
+     * @param operation
+     * @constructor
+     */
     function QuestionSeed(num1, num2, operation) {
         this.num = [];
         this.num[0] = num1;
@@ -472,7 +796,7 @@
                 break;
             case '/':
                 if (num2 !== 0) {
-                    this.result = num1 / num2;
+                    this.result = Math.round(num1 / num2 * 100) / 100;
                 } else {
                     this.result = null;
                 }
@@ -480,6 +804,10 @@
         }
     }
 
+    /**
+     * 试题种子库
+     * @constructor
+     */
     function QuestionDB() {
         this.questions = [];
     }
@@ -492,8 +820,11 @@
             for (var i = min; i <= max; i++) {
                 for (var j = min; j <= max; j++) {
                     var qSeed = new QuestionSeed(i, j, operation);
-                    if (oFilterRule.check(qSeed)) {
-
+                    if (oFilterRule !== null && oFilterRule instanceof FilterRule) {
+                        if (oFilterRule.check(qSeed)) {
+                            this.add(qSeed);
+                        }
+                    } else {
                         this.add(qSeed);
                     }
                 }
@@ -507,6 +838,10 @@
         }
     };
 
+    /**
+     * 试题过滤规则
+     * @constructor
+     */
     function FilterRule() {
         this.rules = [];
     }
@@ -544,7 +879,7 @@
             return qSeed.result >= value;
         },
         _ruleNeedBorrow: function (qSeed) {
-            if (qSeed.operation == '-' && (qSeed.num[0] > qSeed.num[1]) && qSeed.num[0] > 10) {
+            if (qSeed.operation === '-' && (qSeed.num[0] > qSeed.num[1]) && qSeed.num[0] > 10) {
                 var arrNum1 = Util.number2Array(qSeed.num[0]);
                 var arrNum2 = Util.number2Array(qSeed.num[1]);
                 for (var i = 0; i < arrNum1.length; i++) {
@@ -557,6 +892,10 @@
         }
     };
 
+    /**
+     * 工具类
+     * @type {{prevSiblingElem: Util.prevSiblingElem, nextSiblingElem: Util.nextSiblingElem, number2Array: Util.number2Array, shuffle: Util.shuffle}}
+     */
     var Util = {
         prevSiblingElem: function(elem) {
             while ((elem = elem.previousSibling)) {
