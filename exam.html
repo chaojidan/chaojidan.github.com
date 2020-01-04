@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>山哥的口算练习题v2.0</title>
+    <title>山哥口算小能手v2.0</title>
     <style>
         @page { size: landscape; }
         .container{
@@ -436,6 +436,7 @@
             document.getElementById("showOptionBtn").style.display = 'none';
             document.getElementById("finishBtn").style.display = '';
             this.hideOption();
+            this.updateSpendTime('')
         },
         printMode: function () {
             var box = document.querySelector('.optBox');
