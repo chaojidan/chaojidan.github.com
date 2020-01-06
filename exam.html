@@ -38,6 +38,29 @@
             width:90px; font-size: 16px; height: 20px;
             border-width: 0 0 1px 0;
         }
+        @media print {
+            .fillIpt {
+                visibility: hidden;
+            }
+            .questionBox {
+                visibility: visible;
+            }
+            .optBox {
+                display: none;
+            }
+            .chkResult {
+                display: none;
+            }
+            #optionContainer {
+                display: none;
+            }
+            #spendTime {
+                display: none;
+            }
+            #score {
+                display: none;
+            }
+        }
         .itemContainer .fillIpt {
             width:60px; font-size: 18px; height: 22px;
             border-width: 0 0 1px 0;
@@ -46,10 +69,10 @@
         .centerInput .fillIpt {
             text-align: center;
         }
-        .chkResult {
-            display: inline-block;
-            margin-left: 10px;
-        }
+        /*.chkResult {*/
+            /*display: inline-block;*/
+            /*margin-left: 10px;*/
+        /*}*/
         .red {
             color:red;
         }
@@ -366,9 +389,9 @@
             }
         },
         printPaper: function () {
-            this.view.printMode();
+            //this.view.printMode();
             window.print();
-            this.view.examMode();
+            //this.view.examMode();
         }
     };
 
@@ -438,37 +461,37 @@
             this.hideOption();
             this.updateSpendTime('')
         },
-        printMode: function () {
-            var box = document.querySelector('.optBox');
-            box.style.display = 'none';
-            var items = document.querySelectorAll('.fillIpt');
-            for (var i = 0; i < items.length; i++) {
-                items[i].style.visibility = 'hidden';
-            }
-            var items2 = document.querySelectorAll('.chkResult');
-            for (i = 0; i < items2.length; i++) {
-                items2[i].style.display = 'none';
-            }
-            var containers = document.querySelectorAll('.questionBox');
-            for (i = 0; i < containers.length; i++) {
-                containers[i].style.visibility = 'visible';
-            }
-            this.clearScore();
-            this.updateSpendTime('');
-            this.hideOption();
-        },
-        examMode: function () {
-            var box = document.querySelector('.optBox');
-            box.style.display = '';
-            var items = document.querySelectorAll('.fillIpt');
-            for (var i = 0; i < items.length; i++) {
-                items[i].style.visibility = 'visible';
-            }
-            var items2 = document.querySelectorAll('.chkResult');
-            for (i = 0; i < items2.length; i++) {
-                items2[i].style.display = '';
-            }
-        },
+        //printMode: function () {
+            // var box = document.querySelector('.optBox');
+            // box.style.display = 'none';
+            // var items = document.querySelectorAll('.fillIpt');
+            // for (var i = 0; i < items.length; i++) {
+            //     items[i].style.visibility = 'hidden';
+            // }
+            // var items2 = document.querySelectorAll('.chkResult');
+            // for (i = 0; i < items2.length; i++) {
+            //     items2[i].style.display = 'none';
+            // }
+            // var containers = document.querySelectorAll('.questionBox');
+            // for (i = 0; i < containers.length; i++) {
+            //     containers[i].style.visibility = 'visible';
+            // }
+            //this.clearScore();
+            //this.updateSpendTime('');
+            //this.hideOption();
+        //},
+        //examMode: function () {
+            // var box = document.querySelector('.optBox');
+            // box.style.display = '';
+            // var items = document.querySelectorAll('.fillIpt');
+            // for (var i = 0; i < items.length; i++) {
+            //     items[i].style.visibility = 'visible';
+            // }
+            // var items2 = document.querySelectorAll('.chkResult');
+            // for (i = 0; i < items2.length; i++) {
+            //     items2[i].style.display = '';
+            // }
+        //},
         finish: function (userAnswer) {
             this.showScore(userAnswer);
             document.getElementById("startBtn").style.display = '';
@@ -483,15 +506,15 @@
             for (var id in userAnswer) {
                 if (userAnswer[id] === '') {
                     errorNum++;
-                    document.getElementById("chkResult_" + id).innerHTML = '<span class="darkorange">没做</span>';
+                    document.getElementById("chkResult_" + id).innerHTML = '<span class="darkorange"> 没做</span>';
                 } else {
                     //userAnswer[id] = parseInt(userAnswer[id]);
                     if (this.model.questions[id].answer + '' === userAnswer[id]) {
                         score += scorePerItem;
-                        document.getElementById("chkResult_" + id).innerHTML = '<span class="green">对</span>';
+                        document.getElementById("chkResult_" + id).innerHTML = '<span class="green"> 对</span>';
                     } else {
                         errorNum++;
-                        document.getElementById("chkResult_" + id).innerHTML = '<span class="red">错</span>';
+                        document.getElementById("chkResult_" + id).innerHTML = '<span class="red"> 错</span>';
                     }
                 }
             }
