@@ -8,7 +8,7 @@
         .container{
             width: 100%;
             display: flex;
-            font-size: 17px;
+            font-size: 16px;
         }
         .headContainer {
             height: 20px;
@@ -443,7 +443,7 @@
             box.style.display = 'none';
             var items = document.querySelectorAll('.fillIpt');
             for (var i = 0; i < items.length; i++) {
-                items[i].style.display = 'none';
+                items[i].style.visibility = 'hidden';
             }
             var items2 = document.querySelectorAll('.chkResult');
             for (i = 0; i < items2.length; i++) {
@@ -462,7 +462,7 @@
             box.style.display = '';
             var items = document.querySelectorAll('.fillIpt');
             for (var i = 0; i < items.length; i++) {
-                items[i].style.display = '';
+                items[i].style.visibility = 'visible';
             }
             var items2 = document.querySelectorAll('.chkResult');
             for (i = 0; i < items2.length; i++) {
