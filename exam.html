@@ -4,39 +4,6 @@
     <meta charset="UTF-8">
     <title>山哥口算小能手v2.0</title>
     <style>
-        @media print {
-            .fillIpt {
-                visibility: hidden;
-            }
-            .questionBox {
-                visibility: visible;
-            }
-            .optBox {
-                display: none;
-            }
-            .chkResult {
-                display: none;
-            }
-            #optionContainer {
-                display: none;
-            }
-            #spendTime {
-                display: none;
-            }
-            #score {
-                display: none;
-            }
-            @page {
-                size: A4 landscape;
-                margin: 1cm;
-            }
-            body {
-                width: 100%;
-                margin: 0;
-                padding: 0;
-            }
-        }
-        
         .container{
             width: 100%;
             display: flex;
@@ -79,8 +46,8 @@
             text-align: center;
         }
         /*.chkResult {*/
-            /*display: inline-block;*/
-            /*margin-left: 10px;*/
+        /*display: inline-block;*/
+        /*margin-left: 10px;*/
         /*}*/
         .red {
             color:red;
@@ -119,71 +86,104 @@
         #optionContainer input[type=number] {
             width: 60px;
         }
+
+        @media print {
+            .fillIpt {
+                visibility: hidden;
+            }
+            .questionBox {
+                visibility: visible;
+            }
+            .optBox {
+                display: none;
+            }
+            .chkResult {
+                display: none;
+            }
+            #optionContainer {
+                display: none;
+            }
+            #spendTime {
+                display: none;
+            }
+            #score {
+                display: none;
+            }
+            @page {
+                size: A4 landscape;
+                margin-bottom: 0;
+            }
+            body {
+                width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="header">★ 我会算 -- 争当口算小能手 ★</div>
-    <div class="container headContainer">
-        <div class="childDiv">班级：<input type="text" value="" class="fillInfo"></div>
-        <div class="childDiv">姓名：<input type="text" value="" class="fillInfo"></div>
-        <div class="childDiv">我的好成绩：<span id="score"></span></div>
-        <div class="childDiv">用时：<span id="spendTime"></span></div>
-    </div>
-    <hr>
+<div class="header">★ 我会算 -- 争当口算小能手 ★</div>
+<div class="container headContainer">
+    <div class="childDiv">班级：<input type="text" value="" class="fillInfo"></div>
+    <div class="childDiv">姓名：<input type="text" value="" class="fillInfo"></div>
+    <div class="childDiv">我的好成绩：<span id="score"></span></div>
+    <div class="childDiv">用时：<span id="spendTime"></span></div>
+</div>
+<hr>
 
 
-    <div class="container">
-        <div class="childDiv">
-            <div id="optionContainer" style="display: none;">
-                <div style="margin: 20px">
+<div class="container">
+    <div class="childDiv">
+        <div id="optionContainer" style="display: none;">
+            <div style="margin: 20px">
 
-                    <p>考试时间 : <input type="number" value="" class="fillInfo" id="optExamTime"> 秒</p>
-                    <p>包含的四则运算 ：
-                        <label><input type="checkbox" value="+" name="operation" id="operation_a">加</label>
-                        <label><input type="checkbox" value="-" name="operation" id="operation_s">减</label>
-                        <label><input type="checkbox" value="*" name="operation" id="operation_m">乘</label>
-                        <label><input type="checkbox" value="/" name="operation" id="operation_d">除</label>
-                    </p>
+                <p>考试时间 : <input type="number" value="" class="fillInfo" id="optExamTime"> 秒</p>
+                <p>包含的四则运算 ：
+                    <label><input type="checkbox" value="+" name="operation" id="operation_a">加</label>
+                    <label><input type="checkbox" value="-" name="operation" id="operation_s">减</label>
+                    <label><input type="checkbox" value="*" name="operation" id="operation_m">乘</label>
+                    <label><input type="checkbox" value="/" name="operation" id="operation_d">除</label>
+                </p>
 
-                    <p style="margin-top: 30px;"><label>等号左侧出现的最大数： <input type="number" value="" class="fillInfo" id="optMaxLeft"></label></p>
-                    <p><label>等号左侧出现的最小数： <input type="number" value="" class="fillInfo" id="optMinLeft"></label></p>
+                <p style="margin-top: 30px;"><label>等号左侧出现的最大数： <input type="number" value="" class="fillInfo" id="optMaxLeft"></label></p>
+                <p><label>等号左侧出现的最小数： <input type="number" value="" class="fillInfo" id="optMinLeft"></label></p>
 
-                    <p style="margin-top: 30px;"><label>等号右侧出现的最大数： <input type="number" value="" class="fillInfo" id="optMaxRight">（加法和乘法）</label></p>
-                    <p><label>等号右侧出现的最小数： <input type="number" value="" class="fillInfo" id="optMinRight">（减法和除法）</label></p>
+                <p style="margin-top: 30px;"><label>等号右侧出现的最大数： <input type="number" value="" class="fillInfo" id="optMaxRight">（加法和乘法）</label></p>
+                <p><label>等号右侧出现的最小数： <input type="number" value="" class="fillInfo" id="optMinRight">（减法和除法）</label></p>
 
-                    <p style="margin-top: 30px;"><label>答案在等号右侧的题目数： <input type="number" value="" class="fillInfo" id="opt2RNum"></label></p>
-                    <p><label>等号左侧的第一个数为答案的题目数： <input type="number" value="" class="fillInfo" id="opt2L1Num"></label></p>
-                    <p><label>等号左侧的第二个数为答案的题目数： <input type="number" value="" class="fillInfo" id="opt2L2Num"></label></p>
+                <p style="margin-top: 30px;"><label>答案在等号右侧的题目数： <input type="number" value="" class="fillInfo" id="opt2RNum"></label></p>
+                <p><label>等号左侧的第一个数为答案的题目数： <input type="number" value="" class="fillInfo" id="opt2L1Num"></label></p>
+                <p><label>等号左侧的第二个数为答案的题目数： <input type="number" value="" class="fillInfo" id="opt2L2Num"></label></p>
 
-                    <p style="margin-top: 30px;">
-                        <label>减法可以出现借位（被减数大于10的）：
-                            <input type="radio" name="needBorrow" id="needBorrowTrue">是
-                            <input type="radio" name="needBorrow" id="needBorrowFalse">否
-                        </label>
-                    </p>
+                <p style="margin-top: 30px;">
+                    <label>减法可以出现借位（被减数大于10的）：
+                        <input type="radio" name="needBorrow" id="needBorrowTrue">是
+                        <input type="radio" name="needBorrow" id="needBorrowFalse">否
+                    </label>
+                </p>
 
-                    <p><input type="button" value="隐藏设置" class="btn" id="hideOptionBtn"></p>
+                <p><input type="button" value="隐藏设置" class="btn" id="hideOptionBtn"></p>
 
-                </div>
             </div>
-
-            <div class="container itemContainer" id="container"></div>
         </div>
 
-
-
-        <div class="optBox">
-            <div>剩余时间：<span id="remainTime"></span></div>
-            <input type="button" value="开始答题" class="btn" id="startBtn">
-
-            <input type="button" value="交卷" class="btn" id="finishBtn">
-
-            <input type="button" value="打印试卷" class="btn" id="printPaperBtn">
-
-            <input type="button" value="设置" class="btn" id="showOptionBtn">
-        </div>
-
+        <div class="container itemContainer" id="container"></div>
     </div>
+
+
+
+    <div class="optBox">
+        <div>剩余时间：<span id="remainTime"></span></div>
+        <input type="button" value="开始答题" class="btn" id="startBtn">
+
+        <input type="button" value="交卷" class="btn" id="finishBtn">
+
+        <input type="button" value="打印试卷" class="btn" id="printPaperBtn">
+
+        <input type="button" value="设置" class="btn" id="showOptionBtn">
+    </div>
+
+</div>
 
 </body>
 <script>
@@ -449,7 +449,7 @@
         this.colNum = 4;
         this.model = oExam;
     }
-    
+
     ExamView.prototype = {
         showOption: function () {
             document.getElementById("optionContainer").style.display = '';
@@ -471,35 +471,35 @@
             this.updateSpendTime('')
         },
         //printMode: function () {
-            // var box = document.querySelector('.optBox');
-            // box.style.display = 'none';
-            // var items = document.querySelectorAll('.fillIpt');
-            // for (var i = 0; i < items.length; i++) {
-            //     items[i].style.visibility = 'hidden';
-            // }
-            // var items2 = document.querySelectorAll('.chkResult');
-            // for (i = 0; i < items2.length; i++) {
-            //     items2[i].style.display = 'none';
-            // }
-            // var containers = document.querySelectorAll('.questionBox');
-            // for (i = 0; i < containers.length; i++) {
-            //     containers[i].style.visibility = 'visible';
-            // }
-            //this.clearScore();
-            //this.updateSpendTime('');
-            //this.hideOption();
+        // var box = document.querySelector('.optBox');
+        // box.style.display = 'none';
+        // var items = document.querySelectorAll('.fillIpt');
+        // for (var i = 0; i < items.length; i++) {
+        //     items[i].style.visibility = 'hidden';
+        // }
+        // var items2 = document.querySelectorAll('.chkResult');
+        // for (i = 0; i < items2.length; i++) {
+        //     items2[i].style.display = 'none';
+        // }
+        // var containers = document.querySelectorAll('.questionBox');
+        // for (i = 0; i < containers.length; i++) {
+        //     containers[i].style.visibility = 'visible';
+        // }
+        //this.clearScore();
+        //this.updateSpendTime('');
+        //this.hideOption();
         //},
         //examMode: function () {
-            // var box = document.querySelector('.optBox');
-            // box.style.display = '';
-            // var items = document.querySelectorAll('.fillIpt');
-            // for (var i = 0; i < items.length; i++) {
-            //     items[i].style.visibility = 'visible';
-            // }
-            // var items2 = document.querySelectorAll('.chkResult');
-            // for (i = 0; i < items2.length; i++) {
-            //     items2[i].style.display = '';
-            // }
+        // var box = document.querySelector('.optBox');
+        // box.style.display = '';
+        // var items = document.querySelectorAll('.fillIpt');
+        // for (var i = 0; i < items.length; i++) {
+        //     items[i].style.visibility = 'visible';
+        // }
+        // var items2 = document.querySelectorAll('.chkResult');
+        // for (i = 0; i < items2.length; i++) {
+        //     items2[i].style.display = '';
+        // }
         //},
         finish: function (userAnswer) {
             this.showScore(userAnswer);
@@ -790,7 +790,7 @@
             //
             //     }
             // }
-        }    
+        }
     };
 
     /**
