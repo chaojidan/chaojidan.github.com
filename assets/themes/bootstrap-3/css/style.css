@@ -134,3 +134,9 @@ ul li {
     'WenQuanYi Micro Hei', sans-serif;
     line-height: 2em;
 }
+
+.wx {
+    color: #666;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
