@@ -1,0 +1,68 @@
+---
+layout: post
+title: 堆排序Java版
+category : algorithm
+tagline: ""
+tags : [java,heapsort,sort,algorithm]
+---
+<div>
+    <div>最近有好几篇博客都写了一半没写完，今天先贴个简单的堆排序算法吧。</div>
+    <div>很久以前用PHP和儿童编程语言scratch写过堆排序，今天想试试自己还能不能想起来，就用java又实现了一遍，还是花了挺长时间回忆，
+    没办法，智商有限。</div>
+    {% highlight java %}
+import java.util.Arrays;
+
+public class Heapsort {
+    private static Integer[] arr = {3, 5, 12, 1, 4, 8, 6, 13, 2, 7};
+
+    public static void main(String[] args)
+    {
+        heapSort();
+        System.out.println(Arrays.toString(arr));
+    }
+
+    public static void heapSort()
+    {
+        int i;
+        for (i = arr.length; i > 1; i--) {
+            heapAdjust(i);
+            swap(0, i-1);
+        }
+    }
+
+    public static void swap(int a, int b)
+    {
+        int tmp = arr[a];
+        arr[a] = arr[b];
+        arr[b] = tmp;
+    }
+
+    public static void heapAdjust(int len)
+    {
+        System.out.println("len="+len);
+        for (int i = (int) Math.floor(len/2); i >= 1; i--) {
+            int a = arr[i-1];
+            System.out.println("a="+a);
+            int cl = arr[2*i-1];
+            System.out.println("cl="+cl);
+            int maxi;
+            if (2*i < len) {
+                int cr = arr[2 * i];
+                System.out.println("cr="+cr);
+                maxi = cl > cr ? 2 * i - 1 : 2 * i;
+            } else {
+                maxi = 2*i-1;
+            }
+            if (a < arr[maxi]) {
+                System.out.println("swap " + (i-1) + " " + maxi);
+                swap(i-1, maxi);
+            }
+        }
+        System.out.println(Arrays.toString(arr));
+        System.out.println("\n");
+    }
+
+}
+
+    {% endhighlight %}
+</div>
