@@ -76,18 +76,18 @@ tags : [epoll,select,socket]
     <p>图，待补充。。。</p>
     <h4>客户端代码：（简单起见我后面都用这个客户端测试了）</h4>
     {% highlight c %}
-#include &lt;sys/stat.h>
-#include &lt;fcntl.h>
-#include &lt;errno.h>
-#include &lt;netdb.h>
-#include &lt;sys/types.h>
-#include &lt;sys/socket.h>
-#include &lt;netinet/in.h>
-#include &lt;arpa/inet.h>
-#include &lt;stdio.h>
-#include &lt;string.h>
-#include &lt;stdlib.h>
-#include &lt;unistd.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <netdb.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
 #define SERVER_PORT 6666
 
 /*
@@ -139,18 +139,18 @@ int main() {
 
     <h4>服务器端代码：</h4>
     {% highlight c %}
-#include &lt;sys/stat.h>
-#include &lt;fcntl.h>
-#include &lt;errno.h>
-#include &lt;netdb.h>
-#include &lt;sys/types.h>
-#include &lt;sys/socket.h>
-#include &lt;netinet/in.h>
-#include &lt;arpa/inet.h>
-#include &lt;stdio.h>
-#include &lt;string.h>
-#include &lt;stdlib.h>
-#include &lt;unistd.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <netdb.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
 #define SERVER_PORT 6666
 
 /*
@@ -248,22 +248,22 @@ int main() {
 }
     {% endhighlight %}
 
-    <h3>以上阻塞模式要想实现并发响应用户请求，只能使用多线程或多进程，每一个socket都fork出一个进程出来，开销非常大，记得很久以前的web服务器Apche就是
+    <p>以上阻塞模式要想实现并发响应用户请求，只能使用多线程或多进程，每一个socket都fork出一个进程出来，开销非常大，记得很久以前的web服务器Apche就是
     这么干的，在高并发的场景下肯定不行，所以就出现了I/O多路复用技术，I/O多路复用又分3种，select、poll和epoll，select和poll差不多，本质上没有太大区别，
-    epoll是I/O多路复用的终极版本，适用于高并发场景，下面重点介绍一下select和epoll。</h3>
+    epoll是I/O多路复用的终极版本，适用于高并发场景，下面重点介绍一下select和epoll。</p>
 
     <h3>网络I/O模型之select</h3>
     <p>服务器端代码：</p>
     {% highlight c %}
-#include &lt;sys/types.h>
-#include &lt;sys/socket.h>
-#include &lt;stdio.h>
-#include &lt;netinet/in.h>
-#include &lt;sys/time.h>
-#include &lt;sys/ioctl.h>
-#include &lt;unistd.h>
-#include &lt;stdlib.h>
-#include &lt;string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <stdio.h>
+#include <netinet/in.h>
+#include <sys/time.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
 
 int main()
 {
@@ -347,16 +347,16 @@ int main()
     <p>服务器端代码：</p>
     {% highlight c %}
 
-#include &lt;sys/socket.h>
-#include &lt;sys/epoll.h>
-#include &lt;netinet/in.h>
-#include &lt;arpa/inet.h>
-#include &lt;fcntl.h>
-#include &lt;unistd.h>
-#include &lt;stdio.h>
-#include &lt;errno.h>
-#include &lt;stdlib.h>
-#include &lt;string.h>
+#include <sys/socket.h>
+#include <sys/epoll.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <errno.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define LISTENQ 20
 #define BUFF_SIZE 1024
