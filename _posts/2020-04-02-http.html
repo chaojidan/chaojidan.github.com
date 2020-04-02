@@ -44,7 +44,7 @@ tags : [http,http2,https,http3]
         <li><p>GET请求在URL中传送的参数是有长度限制的，而POST么有。</p></li>
         <li><p>对参数的数据类型，GET只接受ASCII字符，而POST没有限制。</p></li>
         <li><p>GET比POST更不安全，因为参数直接暴露在URL上，所以不能用来传递敏感信息。</p></li>
-        <li><p>GET参数通过URL传递，POST放在Request body中。</p></li></ul>
+        <li><p>GET参数通过URL传递，POST放在Request body中。</p></li>
         <li><p>POST时如果数据量比较大，客户端可能会分两次发送，先发送请求头，如果服务器回复“100 - Continue”，则继续发送请求体。</p></li>
     </ul>
 
@@ -72,7 +72,7 @@ tags : [http,http2,https,http3]
         <li>防篡改 - 校验机制 - 摘要算法</li>
         <li>防冒充 - 身份证书 - 如何保证服务器公钥不被篡改？借助第三方权威机构（CA），将服务器公钥放入数字证书中</li>
     </ul>
-    <div>混合加密机制：</div>
+    <h4>混合加密机制：</h4>
     <ul>
         <li>先用非对称加密方式交换"会话密钥"</li>
         <li>通信过程中全部使用对称加密的"会话密钥"加密明文数据</li>
