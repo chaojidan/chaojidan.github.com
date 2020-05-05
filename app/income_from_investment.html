@@ -1,0 +1,312 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8"><link rel="icon" href="https://jscdn.com.cn/highcharts/images/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        /* css 代码  */
+    </style>
+    <script src="https://code.highcharts.com.cn/highcharts/highcharts.js"></script>
+    <script src="https://code.highcharts.com.cn/highcharts/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com.cn/highcharts/modules/oldie.js"></script>
+    <script src="https://code.highcharts.com.cn/highcharts-plugins/highcharts-zh_CN.js"></script>
+    <script src="https://code.highcharts.com.cn/highcharts/themes/dark-unica.js"></script>
+</head>
+<body>
+<div id="container" style="max-width:99%;height:700px"></div>
+<script>
+    // JS 代码
+    function Option(optionFee, exercisePrice, callPut, longShort, number) {
+        this.date = '2020-05-10'; //行权日期
+        this.exercisePrice = exercisePrice; //行权价
+        this.callPut = callPut || 'call'; //买入call，卖出put
+        this.longShort = longShort || 'long'; //看涨long，看跌short
+        this.optionFee = optionFee;  //权利金
+        this.number = 1;
+        this.underlying = 'BTC';  //标的物
+        this.currency = 'USD';  //货币类型
+    }
+
+    Option.prototype = {
+        _getProfit: function (price) {
+            //var self = this;
+            var profit;
+            var moneyBack = 0;
+            if (this.callPut === 'call') {
+                if (this.longShort === 'long') {
+                    //买入看涨期权
+                    if (price <= this.exercisePrice) {
+                        //当前价格低于行权价
+                        moneyBack = 0;
+                    } else {
+                        //当前价格高于行权价
+                        //profit = price - this.exercisePrice - this.optionFee * price;
+                        moneyBack = 1 - this.exercisePrice / price;
+                    }
+                } else if (this.longShort === 'short') {
+                    //买入看跌期权
+                    if (price <= this.exercisePrice) {
+                        //当前价格低于行权价
+                        //profit = this.exercisePrice - price - this.optionFee * price;
+                        moneyBack = this.exercisePrice / price - 1;
+                    } else {
+                        //当前价格高于行权价
+                        moneyBack = 0;
+                    }
+                }
+            } else if (this.callPut === 'put') {
+                if (this.longShort === 'long') {
+                    //卖出看涨期权
+                    if (price <= this.exercisePrice) {
+
+                    } else {
+                        //
+
+                    }
+                } else if (this.longShort === 'short') {
+                    //卖出看跌期权
+                }
+            }
+            profit = moneyBack - this.optionFee;
+            return profit;
+        },
+        //返回法币计价的收益
+        getProfitLc: function (price) {
+            var profit = this._getProfit(price);
+            return Math.round(profit * price * this.number * 100) / 100;
+        },
+        //返回数字货币计价的收益
+        getProfitDc: function (price) {
+            var profit = this._getProfit(price);
+            return Math.round(profit * this.number * 10000) / 10000;
+        },
+        getProfit: function (price, currencyType) {
+            currencyType = currencyType || 'dc';
+            if (currencyType === 'dc') {
+                return this.getProfitDc(price);
+            } else if (currencyType === 'lc') {
+                return this.getProfitLc(price);
+            }
+            throw "货币类型错误，必须是dc或lc";
+        },
+        getName: function () {
+            var name = '';
+            if (this.callPut === 'call') {
+                name = '买入';
+            } else if (this.callPut === 'put') {
+                name = '卖出';
+            }
+            if (this.longShort === 'long') {
+                name += '看涨';
+            } else if (this.longShort === 'short') {
+                name += '看跌';
+            }
+            name = this.underlying + '-' + this.exercisePrice + '-'  + name + '期权' + '-' + this.optionFee;
+            return name;
+        }
+    };
+
+    /**
+     * 投资组合
+     * @constructor
+     */
+    function InvestGroup() {
+        this.group = [];
+    }
+
+    InvestGroup.prototype = {
+        setGroup: function (group) {
+            this.group = group;
+        },
+        add: function (investment) {
+            this.group.push(investment);
+        },
+        getProfit: function (price, currencyType) {
+            var profit = 0;
+            currencyType = currencyType || 'dc'; //lc 法币计价，dc 数字货币计价
+            for (var i in this.group) {
+                profit += this.group[i].getProfit(price, currencyType);
+            }
+            return profit;
+        }
+    };
+
+
+    /**
+     * 价格区间内的投资收益
+     * @constructor
+     */
+    function PriceRange(arrInvest) {
+        this.invest = null;
+        this.arrInvest = null;
+        this.profitLossPoint = [];
+        if (arrInvest instanceof Option) {
+            this.isGroup = false;
+            this.invest = arrInvest;
+        } else if (arrInvest instanceof Array) {
+            this.isGroup = true;
+            this.arrInvest = arrInvest;
+        } else {
+            throw "投资类型对象错误";
+        }
+        this.profitList = [];
+    }
+
+    PriceRange.prototype = {
+        _addProfit: function (price, currencyType) {
+            var profit;
+            if (!this.isGroup) {
+                profit = this.invest.getProfit(price, currencyType);
+            } else {
+                var investGroup = new InvestGroup();
+                investGroup.setGroup(this.arrInvest);
+                profit = investGroup.getProfit(price, currencyType);
+            }
+            this.profitList.push([price, profit]);
+            return profit;
+        },
+        makeProfitForRange: function (min, max, currencyType) {
+            var step = 1; //Math.round((max - min) / 1000);
+            var profit, initPl, start = false;
+            for (var price = min; price <= max; price += step) {
+                profit = this._addProfit(price, currencyType);
+                if (start === false) {
+                    if (profit > 0) {
+                        initPl = 'profit';
+                        start = true;
+                    } else if (profit < 0) {
+                        initPl = 'loss';
+                        start = true;
+                    }
+                }
+
+                if ((initPl === 'profit' && profit <= 0) || (initPl === 'loss' && profit >= 0)) {
+                    if (this.profitList[this.profitList.length-2][1] !== profit) {
+                        this.profitLossPoint.push(price);
+                        initPl = initPl === 'profit' ? 'loss' : 'profit';
+                    }
+                }
+
+            }
+            //console.log(this.profitLossPoint);
+            if (price < max + step) {
+                this._addProfit(max, currencyType);
+            }
+        },
+        //得到投资收益
+        getProfitList: function () {
+            return this.profitList;
+        },
+        getName: function () {
+            if (!this.isGroup) {
+                return this.invest.getName();
+            } else {
+                return '投资组合';
+            }
+        },
+        getProfitLossPoints: function () {
+            return this.profitLossPoint;
+        }
+    };
+
+
+    var min = 4000, max = 13000;
+    var settlementPrice = 10750;
+    var currencyType = 'dc';
+    var options = [
+        new Option(0.0055, settlementPrice, 'call', 'long'),
+        new Option(0.0055, settlementPrice, 'call', 'short')
+    ];
+
+    //生成单个投资不同结算价的收益
+    var arrPriceRange = [];
+    for (var i in options) {
+        arrPriceRange[i] = new PriceRange(options[i]);
+        arrPriceRange[i].makeProfitForRange(min, max, currencyType);
+    }
+    var hcSeries = [];
+    var plotLines = [];
+    for (var i in arrPriceRange) {
+        hcSeries[i] = {
+            name: arrPriceRange[i].getName(), //'期权' + (parseInt(i) + 1),
+            data: arrPriceRange[i].getProfitList()
+        };
+        var plPoints = arrPriceRange[i].getProfitLossPoints();
+        for (var j in plPoints) {
+            plotLines.push({
+                color:'red',            //线的颜色，定义为红色
+                dashStyle:'ShortDash',//标示线的样式，默认是solid（实线），这里定义为长虚线
+                value:plPoints[j],                //定义在哪个值上显示标示线，这里是在x轴上刻度为3的值处垂直化一条线
+                width:2                 //标示线的宽度，2px
+            });
+        }
+    }
+
+    //生成整个投资组合在不同结算价的收益
+    if (options.length > 1) {
+        var groupPriceRange = new PriceRange(options);
+        groupPriceRange.makeProfitForRange(min, max, currencyType);
+
+        hcSeries.push({
+            name: groupPriceRange.getName(),
+            data: groupPriceRange.getProfitList()
+        });
+    }
+
+</script>
+</body>
+</html>
+<script>
+    var chart = Highcharts.chart('container', {
+        chart: {
+            type: 'line',
+            zoomType: 'x',
+            panning: true,
+            panKey: 'shift'
+        },
+        title: {
+            text: '期权投资收益曲线'
+        },
+        subtitle: {
+            text: ''
+        },
+        xAxis: {
+            type: 'linear',
+            title:{
+                text:'结算价'
+            },
+            min: min,
+            max: max,
+            step: 1,
+            plotLines:plotLines
+        },
+        yAxis: {
+            title: {
+                text: '收益'
+            },
+            plotLines:[{
+                color:'red',           //线的颜色，定义为红色
+                dashStyle:'ShortDash',     //默认值，这里定义为实线
+                value:0,               //定义在那个值上显示标示线，这里是在x轴上刻度为3的值处垂直化一条线
+                width:2                //标示线的宽度，2px
+            }]
+        },
+        plotOptions: {
+            line: {
+                dataLabels: {
+                    // 开启数据标签
+                    enabled: false
+                },
+                // 关闭鼠标跟踪，对应的提示框、点击事件会失效
+                enableMouseTracking: true
+            },
+            series: {
+                marker: {
+                    enabled: false
+                }
+            }
+        },
+        series: hcSeries
+    });
+</script>
