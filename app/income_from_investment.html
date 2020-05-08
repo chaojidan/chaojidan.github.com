@@ -3,20 +3,129 @@
 <html>
 <head>
     <meta charset="utf-8"><link rel="icon" href="https://jscdn.com.cn/highcharts/images/favicon.ico">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <style>
         /* css 代码  */
     </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+
     <script src="https://code.highcharts.com.cn/highcharts/highcharts.js"></script>
     <script src="https://code.highcharts.com.cn/highcharts/modules/exporting.js"></script>
     <script src="https://code.highcharts.com.cn/highcharts/modules/oldie.js"></script>
     <script src="https://code.highcharts.com.cn/highcharts-plugins/highcharts-zh_CN.js"></script>
     <script src="https://code.highcharts.com.cn/highcharts/themes/dark-unica.js"></script>
+
+
 </head>
 <body>
-<div id="container" style="max-width:99%;height:700px"></div>
+<div>
+    <div id="container" style="max-width:99%;height:700px;margin-bottom: 1rem;"></div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="shadow p-3 mb-3 bg-white rounded">
+                    <form>
+                        <div class="form-group row">
+                            <label for="inputEmail3" class="col-sm-2 col-form-label">最低结算价</label>
+                            <div class="col-sm-10">
+                                <input type="number" class="form-control" id="iptMinPrice">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="inputEmail3" class="col-sm-2 col-form-label">最高结算价</label>
+                            <div class="col-sm-10">
+                                <input type="number" class="form-control" id="iptMaxPrice">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-10">
+                                <button type="button" class="btn btn-primary" id="btnChangeCommon">修改</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="shadow p-3 mb-5 bg-white rounded">
+
+                    <form>
+                        <div class="form-group row">
+                            <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
+                            <div class="col-sm-10">
+                                <input type="email" class="form-control" id="inputEmail3">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="inputPassword3" class="col-sm-2 col-form-label">Password</label>
+                            <div class="col-sm-10">
+                                <input type="password" class="form-control" id="inputPassword3">
+                            </div>
+                        </div>
+                        <fieldset class="form-group">
+                            <div class="row">
+                                <legend class="col-form-label col-sm-2 pt-0">Radios</legend>
+                                <div class="col-sm-10">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="option1" checked>
+                                        <label class="form-check-label" for="gridRadios1">
+                                            First radio
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="option2">
+                                        <label class="form-check-label" for="gridRadios2">
+                                            Second radio
+                                        </label>
+                                    </div>
+                                    <div class="form-check disabled">
+                                        <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios3" value="option3" disabled>
+                                        <label class="form-check-label" for="gridRadios3">
+                                            Third disabled radio
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <div class="form-group row">
+                            <div class="col-sm-2">Checkbox</div>
+                            <div class="col-sm-10">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="gridCheck1">
+                                    <label class="form-check-label" for="gridCheck1">
+                                        Example checkbox
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-10">
+                                <button type="submit" class="btn btn-primary">Add</button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+            <div class="col">
+                <div class="shadow p-3 mb-5 bg-white rounded">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
 <script>
-    // JS 代码
+
     function Option(optionFee, exercisePrice, callPut, longShort, number) {
         this.date = '2020-05-10'; //行权日期
         this.exercisePrice = exercisePrice; //行权价
@@ -27,6 +136,7 @@
         this.underlying = 'BTC';  //标的物
         this.currency = 'USD';  //货币类型
     }
+
 
     Option.prototype = {
         _getProfit: function (price) {
@@ -169,6 +279,9 @@
         makeProfitForRange: function (min, max, currencyType) {
             var step = 1; //Math.round((max - min) / 1000);
             var profit, initPl, start = false;
+            this.profitList = [];
+            this.profitLossPoint = [];
+
             for (var price = min; price <= max; price += step) {
                 profit = this._addProfit(price, currencyType);
                 if (start === false) {
@@ -189,6 +302,7 @@
                 }
 
             }
+            console.log(this.profitList);
             //console.log(this.profitLossPoint);
             if (price < max + step) {
                 this._addProfit(max, currencyType);
@@ -210,103 +324,142 @@
         }
     };
 
-
-    var min = 4000, max = 13000;
-    var settlementPrice = 10750;
-    var currencyType = 'dc';
-    var options = [
-        new Option(0.0055, settlementPrice, 'call', 'long'),
-        new Option(0.0055, settlementPrice, 'call', 'short')
-    ];
-
-    //生成单个投资不同结算价的收益
-    var arrPriceRange = [];
-    for (var i in options) {
-        arrPriceRange[i] = new PriceRange(options[i]);
-        arrPriceRange[i].makeProfitForRange(min, max, currencyType);
+    function Controller() {
+        this.min = 4000;
+        this.max = 13000;
+        this.currencyType = 'dc';
+        this.options = [];
+        this.arrPriceRange = [];
+        this.groupPriceRange = null;
+        this.chart = null;
+        this.chartData = null;
+        this.init();
     }
-    var hcSeries = [];
-    var plotLines = [];
-    for (var i in arrPriceRange) {
-        hcSeries[i] = {
-            name: arrPriceRange[i].getName(), //'期权' + (parseInt(i) + 1),
-            data: arrPriceRange[i].getProfitList()
-        };
-        var plPoints = arrPriceRange[i].getProfitLossPoints();
-        for (var j in plPoints) {
-            plotLines.push({
-                color:'red',            //线的颜色，定义为红色
-                dashStyle:'ShortDash',//标示线的样式，默认是solid（实线），这里定义为长虚线
-                value:plPoints[j],                //定义在哪个值上显示标示线，这里是在x轴上刻度为3的值处垂直化一条线
-                width:2                 //标示线的宽度，2px
-            });
+
+    Controller.prototype = {
+        _initChart: function () {
+            this.chartData = {
+                chart: {
+                    type: 'line',
+                    zoomType: 'x',
+                    panning: true,
+                    panKey: 'shift'
+                },
+                title: {
+                    text: '期权投资收益曲线'
+                },
+                subtitle: {
+                    text: ''
+                },
+                xAxis: {
+                    type: 'linear',
+                    title:{
+                        text:'结算价'
+                    },
+                    step: 1,
+                    plotLines: []
+                },
+                yAxis: {
+                    title: {
+                        text: '收益'
+                    },
+                    plotLines:[{
+                        color:'red',
+                        dashStyle:'ShortDash',
+                        value:0,
+                        width:2
+                    }]
+                },
+                plotOptions: {
+                    line: {
+                        dataLabels: {
+                            // 开启数据标签
+                            enabled: false
+                        },
+                        // 关闭鼠标跟踪，对应的提示框、点击事件会失效
+                        enableMouseTracking: true
+                    },
+                    series: {
+                        marker: {
+                            enabled: false
+                        }
+                    }
+                },
+                series:[]
+            };
+        },
+        init: function () {
+            var self = this;
+            document.getElementById("btnChangeCommon").onclick = function (ev) {
+                var min = parseInt(document.getElementById("iptMinPrice").value);
+                var max = parseInt(document.getElementById("iptMaxPrice").value);
+                console.log(min, max);
+                self.changeRange(min, max);
+                self.drawChart();
+            };
+            this._initChart();
+        },
+        changeRange: function (min, max) {
+            this.min = min;
+            this.max = max;
+        },
+        addOption: function (option) {
+            this.options.push(option);
+        },
+        getIncome: function () {
+            //生成单个投资不同结算价的收益
+            for (var i in this.options) {
+                this.arrPriceRange[i] = new PriceRange(this.options[i]);
+                this.arrPriceRange[i].makeProfitForRange(this.min, this.max, this.currencyType);
+            }
+
+            //生成[投资组合]在不同结算价的收益
+            if (this.options.length > 1) {
+                this.groupPriceRange = new PriceRange(this.options);
+                this.groupPriceRange.makeProfitForRange(this.min, this.max, this.currencyType);
+            }
+        },
+        drawChart: function () {
+            this.getIncome();
+            this._initChart();
+            document.getElementById("iptMinPrice").value = this.min;
+            document.getElementById("iptMaxPrice").value = this.max;
+            for (var i in this.arrPriceRange) {
+                this.chartData.series[i] = {
+                    name: this.arrPriceRange[i].getName(),
+                    data: this.arrPriceRange[i].getProfitList()
+                };
+                var plPoints = this.arrPriceRange[i].getProfitLossPoints();
+                for (var j in plPoints) {
+                    this.chartData.xAxis.plotLines.push({
+                        color: 'red',            //线的颜色，定义为红色
+                        dashStyle: 'ShortDash',//标示线的样式，默认是solid（实线），这里定义为长虚线
+                        value: plPoints[j],                //定义在哪个值上显示标示线，这里是在x轴上刻度为3的值处垂直化一条线
+                        width: 2                 //标示线的宽度，2px
+                    });
+                }
+            }
+
+            //生成[投资组合]在不同结算价的收益
+            if (this.options.length > 1) {
+                this.chartData.series.push({
+                    name: this.groupPriceRange.getName(),
+                    data: this.groupPriceRange.getProfitList()
+                });
+            }
+            this.chart = Highcharts.chart('container', this.chartData);
         }
-    }
+    };
 
-    //生成整个投资组合在不同结算价的收益
-    if (options.length > 1) {
-        var groupPriceRange = new PriceRange(options);
-        groupPriceRange.makeProfitForRange(min, max, currencyType);
+    controller = new Controller();
+    controller.addOption(new Option(0.0055, 10750, 'call', 'long'));
+    controller.addOption(new Option(0.0055, 10750, 'call', 'short'));
+    controller.drawChart();
 
-        hcSeries.push({
-            name: groupPriceRange.getName(),
-            data: groupPriceRange.getProfitList()
-        });
-    }
+
+
+
 
 </script>
 </body>
 </html>
-<script>
-    var chart = Highcharts.chart('container', {
-        chart: {
-            type: 'line',
-            zoomType: 'x',
-            panning: true,
-            panKey: 'shift'
-        },
-        title: {
-            text: '期权投资收益曲线'
-        },
-        subtitle: {
-            text: ''
-        },
-        xAxis: {
-            type: 'linear',
-            title:{
-                text:'结算价'
-            },
-            min: min,
-            max: max,
-            step: 1,
-            plotLines:plotLines
-        },
-        yAxis: {
-            title: {
-                text: '收益'
-            },
-            plotLines:[{
-                color:'red',           //线的颜色，定义为红色
-                dashStyle:'ShortDash',     //默认值，这里定义为实线
-                value:0,               //定义在那个值上显示标示线，这里是在x轴上刻度为3的值处垂直化一条线
-                width:2                //标示线的宽度，2px
-            }]
-        },
-        plotOptions: {
-            line: {
-                dataLabels: {
-                    // 开启数据标签
-                    enabled: false
-                },
-                // 关闭鼠标跟踪，对应的提示框、点击事件会失效
-                enableMouseTracking: true
-            },
-            series: {
-                marker: {
-                    enabled: false
-                }
-            }
-        },
-        series: hcSeries
-    });
-</script>
