@@ -5,7 +5,7 @@
     <meta charset="utf-8"><link rel="icon" href="https://jscdn.com.cn/highcharts/images/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <style>
-        /* css 代码  */
+
     </style>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
@@ -19,7 +19,6 @@
     <script src="https://code.highcharts.com.cn/highcharts-plugins/highcharts-zh_CN.js"></script>
     <script src="https://code.highcharts.com.cn/highcharts/themes/dark-unica.js"></script>
 
-
 </head>
 <body>
 <div>
@@ -31,83 +30,97 @@
                 <div class="shadow p-3 mb-3 bg-white rounded">
                     <form>
                         <div class="form-group row">
-                            <label for="inputEmail3" class="col-sm-2 col-form-label">最低结算价</label>
-                            <div class="col-sm-10">
+                            <div class="col-auto">
+                                <label for="iptMinPrice" class="col-form-label">最低结算价</label>
                                 <input type="number" class="form-control" id="iptMinPrice">
                             </div>
-                        </div>
 
-                        <div class="form-group row">
-                            <label for="inputEmail3" class="col-sm-2 col-form-label">最高结算价</label>
-                            <div class="col-sm-10">
+                            <div class="col-auto">
+                                <label for="iptMaxPrice" class="col-form-label">最高结算价</label>
                                 <input type="number" class="form-control" id="iptMaxPrice">
                             </div>
-                        </div>
-                        <div class="form-group row">
-                            <div class="col-sm-10">
-                                <button type="button" class="btn btn-primary" id="btnChangeCommon">修改</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <div class="shadow p-3 mb-5 bg-white rounded">
 
-                    <form>
-                        <div class="form-group row">
-                            <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
-                            <div class="col-sm-10">
-                                <input type="email" class="form-control" id="inputEmail3">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="inputPassword3" class="col-sm-2 col-form-label">Password</label>
-                            <div class="col-sm-10">
-                                <input type="password" class="form-control" id="inputPassword3">
-                            </div>
-                        </div>
-                        <fieldset class="form-group">
-                            <div class="row">
-                                <legend class="col-form-label col-sm-2 pt-0">Radios</legend>
-                                <div class="col-sm-10">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="option1" checked>
-                                        <label class="form-check-label" for="gridRadios1">
-                                            First radio
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="option2">
-                                        <label class="form-check-label" for="gridRadios2">
-                                            Second radio
-                                        </label>
-                                    </div>
-                                    <div class="form-check disabled">
-                                        <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios3" value="option3" disabled>
-                                        <label class="form-check-label" for="gridRadios3">
-                                            Third disabled radio
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </fieldset>
-                        <div class="form-group row">
-                            <div class="col-sm-2">Checkbox</div>
-                            <div class="col-sm-10">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="gridCheck1">
-                                    <label class="form-check-label" for="gridCheck1">
-                                        Example checkbox
+                            <div class="col-auto">
+                                <label class="col-form-label">结算货币（Y轴）</label>
+
+                                <div class="btn-group btn-group-toggle" data-toggle="buttons" style="width:100%;">
+                                    <label class="btn btn-secondary active">
+                                        <input type="radio" name="optCurrencyType" value="lc" id="optCurrencyType1" checked> 美元
+                                    </label>
+                                    <label class="btn btn-secondary">
+                                        <input type="radio" name="optCurrencyType" value="dc" id="optCurrencyType2"> BTC
                                     </label>
                                 </div>
                             </div>
+
+                            <div class="col-auto">
+                                <div style="margin-top: 2.2rem;">
+                                <input type="checkbox" class="form-check-input" id="chkGroupPorfit">
+                                <label class="form-check-label" for="chkGroupPorfit">计算组合收益</label>
+                                </div>
+                            </div>
+
+                            <div class="col-auto">
+                                <div style="margin-top: 2.2rem; margin-left: 2rem;">
+                                    <button type="button" class="btn btn-primary" id="btnChangeCommon">修 改</button>
+                                </div>
+                            </div>
                         </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="shadow p-3 mb-5 bg-white rounded">
+                    <h3 style="margin: 1rem">添加Option</h3>
+                    <form>
                         <div class="form-group row">
-                            <div class="col-sm-10">
-                                <button type="submit" class="btn btn-primary">Add</button>
+                            <label for="iptPremium" class="col-sm-3 col-form-label">权利金</label>
+                            <div class="col-sm-9">
+                                <input type="number" class="form-control" id="iptPremium" value="0.01">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="iptExercisePrice" class="col-sm-3 col-form-label">行权价</label>
+                            <div class="col-sm-9">
+                                <input type="number" class="form-control" id="iptExercisePrice" value="10000">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+
+                            <div class="col-sm-4 offset-3">
+                                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                    <label class="btn btn-secondary active">
+                                        <input type="radio" name="optCallPut" value="call" id="radioCallPut1" checked> 买入
+                                    </label>
+                                    <label class="btn btn-secondary">
+                                        <input type="radio" name="optCallPut" value="put" id="radioCallPut2"> 卖出
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4">
+                                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                    <label class="btn btn-secondary active">
+                                        <input type="radio" name="optLongShort" value="long" id="radioLongShort1" checked> 看涨
+                                    </label>
+                                    <label class="btn btn-secondary">
+                                        <input type="radio" name="optLongShort" value="short" id="radioLongShort2"> 看跌
+                                    </label>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-group row">
+                            <div class="col-sm-10 offset-9">
+                                <button type="button" class="btn btn-primary" id="btnAddOption">添加期权</button>
                             </div>
                         </div>
                     </form>
@@ -116,9 +129,13 @@
             </div>
             <div class="col">
                 <div class="shadow p-3 mb-5 bg-white rounded">
+                <h3 style="margin: 1rem">Option List</h3>
+                <ul id="optionContainer"></ul>
                 </div>
             </div>
         </div>
+
+
     </div>
 
 
@@ -126,59 +143,49 @@
 
 <script>
 
-    function Option(optionFee, exercisePrice, callPut, longShort, number) {
-        this.date = '2020-05-10'; //行权日期
+    function Option(premium, exercisePrice, callPut, longShort, number) {
+        this.date = ''; //行权日期
         this.exercisePrice = exercisePrice; //行权价
         this.callPut = callPut || 'call'; //买入call，卖出put
         this.longShort = longShort || 'long'; //看涨long，看跌short
-        this.optionFee = optionFee;  //权利金
+        this.premium = premium;  //权利金
         this.number = 1;
-        this.underlying = 'BTC';  //标的物
+        this.subject = 'BTC';  //标的物
         this.currency = 'USD';  //货币类型
+        this.key = this.setKey();
     }
 
 
     Option.prototype = {
         _getProfit: function (price) {
-            //var self = this;
             var profit;
-            var moneyBack = 0;
             if (this.callPut === 'call') {
-                if (this.longShort === 'long') {
+                var moneyBack = 0;
+                if (this.longShort === 'long' && price > this.exercisePrice) {
                     //买入看涨期权
-                    if (price <= this.exercisePrice) {
-                        //当前价格低于行权价
-                        moneyBack = 0;
-                    } else {
-                        //当前价格高于行权价
-                        //profit = price - this.exercisePrice - this.optionFee * price;
-                        moneyBack = 1 - this.exercisePrice / price;
-                    }
-                } else if (this.longShort === 'short') {
+                    //当前价格高于行权价
+                    moneyBack = 1 - this.exercisePrice / price;
+                } else if (this.longShort === 'short' && price <= this.exercisePrice) {
                     //买入看跌期权
-                    if (price <= this.exercisePrice) {
-                        //当前价格低于行权价
-                        //profit = this.exercisePrice - price - this.optionFee * price;
-                        moneyBack = this.exercisePrice / price - 1;
-                    } else {
-                        //当前价格高于行权价
-                        moneyBack = 0;
-                    }
+                    //当前价格低于行权价
+                    moneyBack = this.exercisePrice / price - 1;
                 }
+                profit = moneyBack - this.premium;
             } else if (this.callPut === 'put') {
+                var loss = 0;
                 if (this.longShort === 'long') {
                     //卖出看涨期权
-                    if (price <= this.exercisePrice) {
-
-                    } else {
-                        //
-
+                    if (price > this.exercisePrice) {
+                        loss = this.exercisePrice / price - 1;
                     }
                 } else if (this.longShort === 'short') {
                     //卖出看跌期权
+                    if (price <= this.exercisePrice) {
+                        loss = 1 - this.exercisePrice/price;
+                    }
                 }
+                profit = loss + this.premium;
             }
-            profit = moneyBack - this.optionFee;
             return profit;
         },
         //返回法币计价的收益
@@ -212,8 +219,16 @@
             } else if (this.longShort === 'short') {
                 name += '看跌';
             }
-            name = this.underlying + '-' + this.exercisePrice + '-'  + name + '期权' + '-' + this.optionFee;
+            name = this.subject + '-' + this.exercisePrice + '-'  + name + '期权' + '[' + this.premium + ']';
             return name;
+        },
+        setKey: function () {
+            var key = [this.subject, this.exercisePrice, this.callPut, this.longShort,
+                this.premium, this.number].join('-');
+            return key.replace('.', '\\.');
+        },
+        getKey: function () {
+            return this.key;
         }
     };
 
@@ -302,8 +317,6 @@
                 }
 
             }
-            console.log(this.profitList);
-            //console.log(this.profitLossPoint);
             if (price < max + step) {
                 this._addProfit(max, currencyType);
             }
@@ -364,7 +377,7 @@
                         text: '收益'
                     },
                     plotLines:[{
-                        color:'red',
+                        color:'green',
                         dashStyle:'ShortDash',
                         value:0,
                         width:2
@@ -393,20 +406,63 @@
             document.getElementById("btnChangeCommon").onclick = function (ev) {
                 var min = parseInt(document.getElementById("iptMinPrice").value);
                 var max = parseInt(document.getElementById("iptMaxPrice").value);
-                console.log(min, max);
+                var currencyType = $("input[name='optCurrencyType']:checked").val();
+
                 self.changeRange(min, max);
+                self.changeCurrencyType(currencyType);
                 self.drawChart();
             };
+            document.getElementById("btnAddOption").onclick = function (ev) {
+                var premium = parseFloat(document.getElementById("iptPremium").value);
+                var exercisePrice = parseFloat(document.getElementById("iptExercisePrice").value);
+                var callPut = $("input[name='optCallPut']:checked").val();
+                var longShort = $("input[name='optLongShort']:checked").val();
+
+                var r = self.addOption(new Option(premium, exercisePrice, callPut, longShort));
+                if (r === true) {
+                    self.drawChart();
+                }
+            };
+            $('#optionContainer').on('click', '.btnRemOption', function () {
+                self.removeOption($(this).data('key'));
+                self.drawChart();
+            });
             this._initChart();
+        },
+        changeCurrencyType: function (currencyType) {
+            this.currencyType = currencyType;
         },
         changeRange: function (min, max) {
             this.min = min;
             this.max = max;
         },
+        getOptionIndex: function (key) {
+            for (var i  in this.options) {
+                if (this.options[i].getKey() === key) {
+                    return i;
+                }
+            }
+            return false;
+        },
         addOption: function (option) {
+            if (this.getOptionIndex(option.getKey()) !== false) {
+                alert("期权已存在");
+                return false;
+            }
             this.options.push(option);
+            $("#optionContainer").append("<li id='opt_" + option.getKey() + "'>"+option.getName()
+                +" <a href='javascript:;' class='btnRemOption' data-key='" + option.getKey() + "'>[X]</a></li>");
+            return true;
+        },
+        removeOption: function (key) {
+            this.options.splice(this.getOptionIndex[key], 1);
+
+            console.log(document.getElementById('opt_' + key));
+            $(document.getElementById('opt_' + key)).remove();
         },
         getIncome: function () {
+            this.arrPriceRange = [];
+            this.groupPriceRange = [];
             //生成单个投资不同结算价的收益
             for (var i in this.options) {
                 this.arrPriceRange[i] = new PriceRange(this.options[i]);
@@ -452,8 +508,6 @@
     };
 
     controller = new Controller();
-    controller.addOption(new Option(0.0055, 10750, 'call', 'long'));
-    controller.addOption(new Option(0.0055, 10750, 'call', 'short'));
     controller.drawChart();
 
 
