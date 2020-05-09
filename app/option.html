@@ -55,8 +55,8 @@
 
                             <div class="col-auto">
                                 <div style="margin-top: 2.2rem;">
-                                <input type="checkbox" class="form-check-input" id="chkGroupPorfit">
-                                <label class="form-check-label" for="chkGroupPorfit">计算组合收益</label>
+                                <input type="checkbox" class="form-check-input" id="chkMakeGroupPorfit" checked>
+                                <label class="form-check-label" for="chkMakeGroupPorfit">计算组合收益</label>
                                 </div>
                             </div>
 
@@ -346,6 +346,7 @@
         this.groupPriceRange = null;
         this.chart = null;
         this.chartData = null;
+        this.makeGroupPorfit = true;
         this.init();
     }
 
@@ -407,7 +408,7 @@
                 var min = parseInt(document.getElementById("iptMinPrice").value);
                 var max = parseInt(document.getElementById("iptMaxPrice").value);
                 var currencyType = $("input[name='optCurrencyType']:checked").val();
-
+                self.makeGroupPorfit = document.getElementById("chkMakeGroupPorfit").checked;
                 self.changeRange(min, max);
                 self.changeCurrencyType(currencyType);
                 self.drawChart();
@@ -457,7 +458,6 @@
         removeOption: function (key) {
             this.options.splice(this.getOptionIndex[key], 1);
 
-            console.log(document.getElementById('opt_' + key));
             $(document.getElementById('opt_' + key)).remove();
         },
         getIncome: function () {
@@ -470,12 +470,13 @@
             }
 
             //生成[投资组合]在不同结算价的收益
-            if (this.options.length > 1) {
+            if (this.makeGroupPorfit === true && this.options.length > 1) {
                 this.groupPriceRange = new PriceRange(this.options);
                 this.groupPriceRange.makeProfitForRange(this.min, this.max, this.currencyType);
             }
         },
         drawChart: function () {
+            console.log(this.makeGroupPorfit);
             this.getIncome();
             this._initChart();
             document.getElementById("iptMinPrice").value = this.min;
@@ -497,7 +498,7 @@
             }
 
             //生成[投资组合]在不同结算价的收益
-            if (this.options.length > 1) {
+            if (this.makeGroupPorfit === true && this.options.length > 1) {
                 this.chartData.series.push({
                     name: this.groupPriceRange.getName(),
                     data: this.groupPriceRange.getProfitList()
