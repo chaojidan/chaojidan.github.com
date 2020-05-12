@@ -86,9 +86,9 @@
                         </div>
 
                         <div class="form-group row">
-                            <label for="iptExercisePrice" class="col-sm-3 col-form-label">行权价</label>
+                            <label for="iptstrikePrice" class="col-sm-3 col-form-label">行权价</label>
                             <div class="col-sm-9">
-                                <input type="number" class="form-control" id="iptExercisePrice" value="10000">
+                                <input type="number" class="form-control" id="iptstrikePrice" value="10000">
                             </div>
                         </div>
 
@@ -97,21 +97,23 @@
                             <div class="col-sm-4 offset-3">
                                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
                                     <label class="btn btn-secondary active">
-                                        <input type="radio" name="optCallPut" value="call" id="radioCallPut1" checked> 买入
+                                        <input type="radio" name="optCallPut" value="call" id="radioCallPut1" checked> Call 买入
                                     </label>
                                     <label class="btn btn-secondary">
-                                        <input type="radio" name="optCallPut" value="put" id="radioCallPut2"> 卖出
+                                        <input type="radio" name="optCallPut" value="put" id="radioCallPut2"> Put 卖出
                                     </label>
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="col-sm-4">
+                        <div class="form-group row">
+                            <div class="col-sm-4 offset-3">
                                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
                                     <label class="btn btn-secondary active">
-                                        <input type="radio" name="optLongShort" value="long" id="radioLongShort1" checked> 看涨
+                                        <input type="radio" name="optLongShort" value="long" id="radioLongShort1" checked> Long 看涨
                                     </label>
                                     <label class="btn btn-secondary">
-                                        <input type="radio" name="optLongShort" value="short" id="radioLongShort2"> 看跌
+                                        <input type="radio" name="optLongShort" value="short" id="radioLongShort2"> Short 看跌
                                     </label>
                                 </div>
                             </div>
@@ -144,9 +146,9 @@
 
 <script>
 
-    function Option(premium, exercisePrice, callPut, longShort, number) {
+    function Option(premium, strikePrice, callPut, longShort, number) {
         this.date = ''; //行权日期
-        this.exercisePrice = exercisePrice; //行权价
+        this.strikePrice = strikePrice; //行权价
         this.callPut = callPut || 'call'; //买入call，卖出put
         this.longShort = longShort || 'long'; //看涨long，看跌short
         this.premium = premium;  //权利金
@@ -162,27 +164,27 @@
             var profit;
             if (this.callPut === 'call') {
                 var moneyBack = 0;
-                if (this.longShort === 'long' && price > this.exercisePrice) {
+                if (this.longShort === 'long' && price > this.strikePrice) {
                     //买入看涨期权
                     //当前价格高于行权价
-                    moneyBack = 1 - this.exercisePrice / price;
-                } else if (this.longShort === 'short' && price <= this.exercisePrice) {
+                    moneyBack = 1 - this.strikePrice / price;
+                } else if (this.longShort === 'short' && price <= this.strikePrice) {
                     //买入看跌期权
                     //当前价格低于行权价
-                    moneyBack = this.exercisePrice / price - 1;
+                    moneyBack = this.strikePrice / price - 1;
                 }
                 profit = moneyBack - this.premium;
             } else if (this.callPut === 'put') {
                 var loss = 0;
                 if (this.longShort === 'long') {
                     //卖出看涨期权
-                    if (price > this.exercisePrice) {
-                        loss = this.exercisePrice / price - 1;
+                    if (price > this.strikePrice) {
+                        loss = this.strikePrice / price - 1;
                     }
                 } else if (this.longShort === 'short') {
                     //卖出看跌期权
-                    if (price <= this.exercisePrice) {
-                        loss = 1 - this.exercisePrice/price;
+                    if (price <= this.strikePrice) {
+                        loss = 1 - this.strikePrice/price;
                     }
                 }
                 profit = loss + this.premium;
@@ -220,11 +222,11 @@
             } else if (this.longShort === 'short') {
                 name += '看跌';
             }
-            name = this.subject + '-' + this.exercisePrice + '-'  + name + '期权' + '[' + this.premium + ']';
+            name = this.subject + '-' + this.strikePrice + '-'  + name + '期权' + '[' + this.premium + ']';
             return name;
         },
         setKey: function () {
-            var key = [this.subject, this.exercisePrice, this.callPut, this.longShort,
+            var key = [this.subject, this.strikePrice, this.callPut, this.longShort,
                 this.premium, this.number].join('-');
             return key.replace('.', '\\.');
         },
@@ -421,11 +423,11 @@
             };
             document.getElementById("btnAddOption").onclick = function (ev) {
                 var premium = parseFloat(document.getElementById("iptPremium").value);
-                var exercisePrice = parseFloat(document.getElementById("iptExercisePrice").value);
+                var strikePrice = parseFloat(document.getElementById("iptstrikePrice").value);
                 var callPut = $("input[name='optCallPut']:checked").val();
                 var longShort = $("input[name='optLongShort']:checked").val();
 
-                var r = self.addOption(new Option(premium, exercisePrice, callPut, longShort));
+                var r = self.addOption(new Option(premium, strikePrice, callPut, longShort));
                 if (r === true) {
                     self.drawChart();
                 }
