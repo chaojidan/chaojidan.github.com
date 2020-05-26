@@ -216,9 +216,9 @@
                 name += '卖出';
             }
             if (this.callPut === 'call') {
-                name = '看涨';
+                name += '看涨';
             } else if (this.callPut === 'put') {
-                name = '看跌';
+                name += '看跌';
             }
             name = this.subject + '-' + this.strikePrice + '-'  + name + '期权' + '[' + this.premium + ']';
             return name;
