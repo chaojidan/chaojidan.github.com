@@ -97,10 +97,10 @@
                             <div class="col-sm offset-4">
                                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
                                     <label class="btn btn-secondary active">
-                                        <input type="radio" name="optCallPut" value="call" id="radioCallPut1" checked> Call 买入
+                                        <input type="radio" name="optCallPut" value="call" id="radioCallPut1" checked> Call 看涨
                                     </label>
                                     <label class="btn btn-secondary">
-                                        <input type="radio" name="optCallPut" value="put" id="radioCallPut2"> Put 卖出
+                                        <input type="radio" name="optCallPut" value="put" id="radioCallPut2"> Put 看跌
                                     </label>
                                 </div>
                             </div>
@@ -110,10 +110,10 @@
                             <div class="col-sm offset-4">
                                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
                                     <label class="btn btn-secondary active">
-                                        <input type="radio" name="optLongShort" value="long" id="radioLongShort1" checked> Long 看涨
+                                        <input type="radio" name="optLongShort" value="long" id="radioLongShort1" checked> Long 买入
                                     </label>
                                     <label class="btn btn-secondary">
-                                        <input type="radio" name="optLongShort" value="short" id="radioLongShort2"> Short 看跌
+                                        <input type="radio" name="optLongShort" value="short" id="radioLongShort2"> Short 卖出
                                     </label>
                                 </div>
                             </div>
@@ -149,8 +149,8 @@
     function Option(premium, strikePrice, callPut, longShort, number) {
         this.date = ''; //行权日期
         this.strikePrice = strikePrice; //行权价
-        this.callPut = callPut || 'call'; //买入call，卖出put
-        this.longShort = longShort || 'long'; //看涨long，看跌short
+        this.callPut = callPut || 'call'; //看涨call，看跌put
+        this.longShort = longShort || 'long'; //买入long，卖出short
         this.premium = premium;  //权利金
         this.number = 1;
         this.subject = 'BTC';  //标的物
@@ -162,26 +162,26 @@
     Option.prototype = {
         _getProfit: function (price) {
             var profit;
-            if (this.callPut === 'call') {
+            if (this.longShort === 'long') {
                 var moneyBack = 0;
-                if (this.longShort === 'long' && price > this.strikePrice) {
+                if (this.callPut === 'call' && price > this.strikePrice) {
                     //买入看涨期权
                     //当前价格高于行权价
                     moneyBack = 1 - this.strikePrice / price;
-                } else if (this.longShort === 'short' && price <= this.strikePrice) {
+                } else if (this.callPut === 'put' && price <= this.strikePrice) {
                     //买入看跌期权
                     //当前价格低于行权价
                     moneyBack = this.strikePrice / price - 1;
                 }
                 profit = moneyBack - this.premium;
-            } else if (this.callPut === 'put') {
+            } else if (this.longShort === 'short') {
                 var loss = 0;
-                if (this.longShort === 'long') {
+                if (this.callPut === 'call') {
                     //卖出看涨期权
                     if (price > this.strikePrice) {
                         loss = this.strikePrice / price - 1;
                     }
-                } else if (this.longShort === 'short') {
+                } else if (this.callPut === 'put') {
                     //卖出看跌期权
                     if (price <= this.strikePrice) {
                         loss = 1 - this.strikePrice/price;
@@ -212,15 +212,15 @@
         },
         getName: function () {
             var name = '';
-            if (this.callPut === 'call') {
-                name = '买入';
-            } else if (this.callPut === 'put') {
-                name = '卖出';
-            }
             if (this.longShort === 'long') {
-                name += '看涨';
+                name += '买入';
             } else if (this.longShort === 'short') {
-                name += '看跌';
+                name += '卖出';
+            }
+            if (this.callPut === 'call') {
+                name = '看涨';
+            } else if (this.callPut === 'put') {
+                name = '看跌';
             }
             name = this.subject + '-' + this.strikePrice + '-'  + name + '期权' + '[' + this.premium + ']';
             return name;
