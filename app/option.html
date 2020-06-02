@@ -473,7 +473,7 @@
             console.log("remove index:" + this.getOptionIndex(key));
             var idx = this.getOptionIndex(key);
             if (idx !== false) {
-                this.options.splice(this.getOptionIndex[key], 1);
+                this.options.splice(this.getOptionIndex(key), 1);
                 console.log(this.options);
                 $(document.getElementById('opt_' + key)).remove();
             } else {
