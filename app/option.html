@@ -496,6 +496,7 @@
             document.getElementById("iptMinPrice").value = this.min;
             document.getElementById("iptMaxPrice").value = this.max;
             console.log(this.arrPriceRange);
+            this.chartData.series = [];
             for (var i in this.arrPriceRange) {
                 this.chartData.series[i] = {
                     name: this.arrPriceRange[i].getName(),
