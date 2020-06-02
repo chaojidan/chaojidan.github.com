@@ -468,8 +468,10 @@
             return true;
         },
         removeOption: function (key) {
+            console.log("remove key:" + key);
+            console.log("remove index:" + this.getOptionIndex[key]);
             this.options.splice(this.getOptionIndex[key], 1);
-
+            console.log(this.options);
             $(document.getElementById('opt_' + key)).remove();
         },
         //计算收益
