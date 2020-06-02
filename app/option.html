@@ -150,7 +150,8 @@
         this.callPut = callPut || 'call'; //看涨call，看跌put
         this.longShort = longShort || 'long'; //买入long，卖出short
         this.premium = premium;  //权利金
-        this.number = 1;
+        this.iv = 0; //波动率
+        this.number = 1; //买入份数
         this.subject = 'BTC';  //标的物
         this.currency = 'USD';  //货币类型
         this.key = this.setKey();
@@ -220,7 +221,8 @@
             } else if (this.callPut === 'put') {
                 name += '看跌';
             }
-            name = this.subject + '-' + this.strikePrice + '-'  + name + '期权' + '[' + this.premium + ']';
+            name = this.subject + '-' + this.strikePrice + '-'  + name + '期权('+this.longShort + ' ' + this.callPut
+                + ')' + '[' + this.premium + ']';
             return name;
         },
         setKey: function () {
@@ -348,6 +350,7 @@
         this.chart = null;
         this.chartData = null;
         this.makeGroupPorfit = true;
+        this.isInit = false;
         this.init();
     }
 
@@ -407,6 +410,7 @@
                 },
                 series:[]
             };
+            this.isInit = true;
         },
         init: function () {
             var self = this;
@@ -419,6 +423,7 @@
                 self.changeCurrencyType(currencyType);
                 self.drawChart();
             };
+            //添加期权
             document.getElementById("btnAddOption").onclick = function (ev) {
                 var premium = parseFloat(document.getElementById("iptPremium").value);
                 var strikePrice = parseFloat(document.getElementById("iptstrikePrice").value);
@@ -430,6 +435,7 @@
                     self.drawChart();
                 }
             };
+            //删除期权
             $('#optionContainer').on('click', '.btnRemOption', function () {
                 self.removeOption($(this).data('key'));
                 self.drawChart();
@@ -466,7 +472,8 @@
 
             $(document.getElementById('opt_' + key)).remove();
         },
-        getIncome: function () {
+        //计算收益
+        _getIncome: function () {
             this.arrPriceRange = [];
             this.groupPriceRange = [];
             //生成单个投资不同结算价的收益
@@ -482,16 +489,19 @@
             }
         },
         drawChart: function () {
-            console.log(this.makeGroupPorfit);
-            this.getIncome();
-            this._initChart();
+            this._getIncome();
+            if (this.isInit === false) {
+                this._initChart();
+            }
             document.getElementById("iptMinPrice").value = this.min;
             document.getElementById("iptMaxPrice").value = this.max;
+            console.log(this.arrPriceRange);
             for (var i in this.arrPriceRange) {
                 this.chartData.series[i] = {
                     name: this.arrPriceRange[i].getName(),
                     data: this.arrPriceRange[i].getProfitList()
                 };
+                //盈亏分界点
                 var plPoints = this.arrPriceRange[i].getProfitLossPoints();
                 for (var j in plPoints) {
                     this.chartData.xAxis.plotLines.push({
