@@ -450,7 +450,8 @@
             this.max = max;
         },
         getOptionIndex: function (key) {
-            for (var i  in this.options) {
+            for (var i in this.options) {
+                console.log(this.options[i].getKey() + ' = ' . key, this.options[i].getKey() === key);
                 if (this.options[i].getKey() === key) {
                     return i;
                 }
@@ -469,10 +470,15 @@
         },
         removeOption: function (key) {
             console.log("remove key:" + key);
-            console.log("remove index:" + this.getOptionIndex[key]);
-            this.options.splice(this.getOptionIndex[key], 1);
-            console.log(this.options);
-            $(document.getElementById('opt_' + key)).remove();
+            console.log("remove index:" + this.getOptionIndex(key));
+            var idx = this.getOptionIndex(key);
+            if (idx !== false) {
+                this.options.splice(this.getOptionIndex[key], 1);
+                console.log(this.options);
+                $(document.getElementById('opt_' + key)).remove();
+            } else {
+                alert('期权不存在:' + key);
+            }
         },
         //计算收益
         _getIncome: function () {
