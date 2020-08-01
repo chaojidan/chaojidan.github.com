@@ -1,52 +1,3 @@
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta http-equiv="Access-Control-Allow-Origin" content="*">
-    <meta http-equiv="Access-Control-Allow-Credentials" content="true">
-    <title>关于HTTP相关总结</title>
-
-    <meta name="author" content="wanghui">
-
-    <!-- Enable responsive viewport -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Bootstrap styles -->
-    <link href="http://chaojidan.github.io/assets/themes/bootstrap-3/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Optional theme -->
-    <link href="http://chaojidan.github.io/assets/themes/bootstrap-3/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">
-    <!-- Sticky Footer -->
-    <link href="http://chaojidan.github.io/assets/themes/bootstrap-3/bootstrap/css/bs-sticky-footer.css" rel="stylesheet">
-
-    <!-- Custom styles -->
-    <link href="http://chaojidan.github.io/assets/themes/bootstrap-3/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
-
-    <link href="http://chaojidan.github.io/assets/themes/bootstrap-3/css/jekyll-github.css" rel="stylesheet" type="text/css" media="all">
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
-    <![endif]-->
-
-    <!-- Fav and touch icons -->
-    <!-- Update these with your own images
-      <link rel="shortcut icon" href="images/favicon.ico">
-      <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
-      <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
-      <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
-    -->
-
-    <!-- atom & rss feed -->
-    <link href="http://chaojidan.github.io/atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM Feed">
-    <link href="http://chaojidan.github.io/rss.xml" type="application/rss+xml" rel="alternate" title="Sitewide RSS Feed">
-    <script src="https://cdn.bootcss.com/jquery/1.11.3/jquery.js"></script>
-
-
-</head><body>
-
 ---
 layout: post
 title: 我的代码观
@@ -66,7 +17,9 @@ tags : [coder]
 <p>2. 修养：主要指人的综合素质，指正确的待人处事的态度。</p>
 <p>但是我后来想想觉得不妥，“修养”一词用的有点大了，我的这些观点都是很主观的，不见得是正确的，很可能还是错的，所以还是叫“代码观”准确一些。</p>
 <p>PS：我知道有本书叫《程序员的自我修养》，那本书讲的好像是操作系统的底层开发，书名起的并不贴切。</p>
+
 <hr>
+
 <p>代码观多少跟编程能力、智力和工作经验有一定关系，但关系不大，更多的是一种态度。</p>
 <p>举个例子，当有一个需求，老板很着急，直接找到你让你尽快实现，你咋办？</p>
 <p>有两种实现方案：</p>
@@ -78,6 +31,8 @@ tags : [coder]
 <p>人们又不可能穿越到【选择第一种实现方式的你所在的】平行世界中去做对比，又有谁能体会得到这其中的差别呢？</p>
 
 <p>我觉得这个问题没有唯一的正确答案，至于如何选择，就是一个人代码观的体现。</p>
+
+    <hr>
 
 <p>讨论代码观之前，先简单聊个宏大点儿的话题：生命的意义是什么？</p>
 
@@ -93,6 +48,8 @@ tags : [coder]
 
 <p>对于码农来说，“道”就是利用“编程”这个武器来对抗墒增，更具体点说，就是把代码写好，符合逻辑，不出bug，减少重复劳动，以此让人类世界变得更有序（整个宇宙变得更无序）。</p>
 
+    <hr>
+
 <p>要写好代码，我觉得有三个词必须刻在脑子里，写代码时要不断提醒自己：逻辑、收敛、抽象。</p>
 
 <p>符合逻辑是写代码的基本要求，逻辑错误是硬伤。</p>
@@ -107,6 +64,8 @@ tags : [coder]
 <p>收敛的含义就是汇聚于一点，好的代码可以做到任何功能上的增、删、改都只需改动一处代码即可，如果你发现为了增加个新功能需要在代码中到处搜索，改动点多达十几个几十个，或者项目中到处都是重复的代码，说明这不是一个好的代码。</p>
 
 <p>抽象是更高层次的收敛，指从众多的具体事物中，抽取共同的、本质的属性，舍弃个别的、非本质的属性，从而形成概念。抽象可以大大降低代码复杂度，提高代码可复用性，这一点经常写业务代码的PHP码农们应该好好学习借鉴一下Java的编程思想，比如Java的Spring框架，依赖注入和面向切面，体会一下什么叫高度的抽象。总的来说，抽象能力对先天智商要求很高，不是什么人都具备的。</p>
+
+    <hr>
 
 <p>下面是我在开发过程中总结的一些经验和观点，想到哪儿写到哪儿。</p>
 
@@ -237,6 +196,8 @@ tags : [coder]
 <p>* 霰弹式修改（一种变化引发多个类相应修改）</p>
 <p>* .....</p>
 
+    <hr>
+
 <p>以上啰嗦了这么多，并不不涉及什么高深的技术，有些是常识，有些是非常主观的认识，我也承认在工期的压力下，能够坚持做到这些还是挺难的。回到本文开头的那个问题，两种方案，如果让我选，我选哪个？我这个人比较喜欢中庸之道，不喜欢走极端，但也不是没有侧重，上面写了那么多，各位也应该能看出，在效率和质量方面，我是更注重后者的，如果让我选，如果时间还算充裕的话，效率vs质量，我大概是3/7分，如果时间紧张，就4/6分，质量占6成，不能再低了。</p>
 
 <p>非常遗憾的是，绝大多数人并不重视我所看重的这些，大家看到的都是目标是否达成，至于过程，无所谓了。只有真正写代码的那个人，才能体会到良好的设计真的可以事半功倍，还有一种美感，其他人都感受不到，因为这件事是无法衡量的，你不可能穿越到过去，把这项工作从来一遍，然后对比出来怎样做才是最好的。你做的再好，别人也无法知道做的不好时是什么样子，你做的再差，别人也无法知道做的很好时是什么样子。面试的时候，面试官也不会问到这些，短短1-2个小时，不可能真的了解一个人。所以大部分时间，你只能是出于一种自娱自乐罢了，一种完美主义倾向，还有就是一种责任感，对自己负责，对别人负责。</p>
@@ -244,8 +205,3 @@ tags : [coder]
 <p>码农这个职业在中国还是个青春饭，再过若干年，我不见得还能从事这一职业，写这篇文章，算是对自己码农生涯的一个总结，能力有限，认识有限，多多包涵。</p>
 <p></p>
 </div>
-
-
-
-</body>
-</html>
